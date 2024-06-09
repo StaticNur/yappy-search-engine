@@ -1,0 +1,47 @@
+  {
+  "size": 5,
+  "query": {
+    "script_score": {
+      "query": { "match_all": {} },
+      "script": {
+        "source": "cosineSimilarity(params.queryVector, 'embedding') + 1.0",
+        "params": {
+          "queryVector": [5.8, 5.2, 5.7, 5.8, 7.9]
+        }
+      }
+    }
+  }
+}
+
+
+odfe-node:
+    image: amazon/opendistro-for-elasticsearch:1.13.2
+    container_name: odfe-node
+    environment:
+      - discovery.type=single-node
+      - cluster.name=my-cluster # укажите ваше имя кластера
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # настройка размера Java heap
+      - "OPENDISTRO_SECURITY_DISABLED=true" # отключение безопасности для простоты тестирования (не рекомендуется в продакшене)
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - odfe-net
+
+
+{
+  "size": 5,
+  "query": {
+    "script_score": {
+      "query": { "match_all": {} },
+      "script": {
+        "source": "if (doc['embedding'].size() == 0) { return 0.0; } else { def score = cosineSimilarity(params.queryVector, 'embedding') + 1.0; if (Double.isNaN(score) || score < 0) { return 0.0; } else { return score; } }",
+        "params": {
+          "queryVector": [0.0, 0.0, 0.0, 0.0, 0.0]
+        }
+      }
+    }
+  }
+}

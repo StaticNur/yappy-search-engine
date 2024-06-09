@@ -1,0 +1,23 @@
+package com.yappy.search_engine.controller;
+
+import com.yappy.search_engine.service.ExcelDataService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ExcelDataController {
+
+    private final ExcelDataService excelDataService;
+
+    @Autowired
+    public ExcelDataController(ExcelDataService excelDataService) {
+        this.excelDataService = excelDataService;
+    }
+
+    @PostMapping("/import/excel")
+    public String importDataFromExcel() {
+        excelDataService.importData();
+        return "Data imported successfully!";
+    }
+}

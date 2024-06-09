@@ -1,0 +1,53 @@
+version: '3.3'
+
+services:
+  postgres_db:
+    image: postgres:15.1-alpine
+    container_name: media-content
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=media-content-db
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  odfe-node:
+    image: elasticsearch:7.10.1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1000m"
+        max-file: "10"
+    container_name: odfe-node
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - mynetwork
+
+  search-engine:
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    links:
+      - "postgres_db:postgres_db"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  odfe-data:
+  postgres_db:
+

@@ -1,0 +1,59 @@
+{
+  "index_patterns": [
+    "video*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "analysis": {
+        "filter": {
+          "russian_stop": {
+            "type": "stop",
+            "stopwords": "_russian_"
+          },
+          "russian_stemmer": {
+            "type": "stemmer",
+            "language": "russian"
+          },
+          "russian_synonym": {
+            "type": "synonym",
+            "ignore_case": true
+          },
+          "shingle_filter": {
+            "type": "shingle",
+            "max_shingle_size": 3,
+            "output_unigrams": true
+          }
+        },
+        "analyzer": {
+          "russian_custom_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "russian_synonym",
+              "russian_stop",
+              "russian_stemmer",
+              "shingle_filter"
+            ]
+          }
+        }
+      }
+    },
+    "mappings": {
+      "properties": {
+        "address": {
+          "type": "text",
+          "analyzer": "russian_custom_analyzer"
+        },
+        "path": {
+          "type": "text"
+        },
+        "objectid": {
+          "type": "long"
+        }
+      }
+    }
+  }
+}
