@@ -42,6 +42,7 @@
         <h2>Введите данные для сохранения</h2>
         <label class="form-check-label" for="url">Ссылка на видео<span style="color:red">*</span></label>
         <input type="text" class="form-control" placeholder="https://cdn-st.rutubelist.ru/media/..." id="url">
+        <span class="urlErrorInput">Ссылка на видео обязательно должна быть!</span>
 
         <br>
         <label class="form-check-label" for="title">Заголовок видео</label>
@@ -56,7 +57,7 @@
         <label class="form-check-label" for="my-tags">Теги видео</label>
         <input type="text" class="form-control" placeholder="#top #рек #game" id="my-tags">
 
-        <button class="btn btn-outline-secondary" type="button" name="Edit" onclick="hideSaveForm()"
+        <button class="btn btn-outline-secondary" type="button" name="Edit" onclick="saveNewVideo()"
                 style="margin-top:10px">Сохранить
         </button>
     </div>

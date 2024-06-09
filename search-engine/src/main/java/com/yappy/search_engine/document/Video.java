@@ -56,7 +56,9 @@ public class Video {
         this.created = created;
     }
 
-    public Video(String uuid, String url, String title, String descriptionUser, String descriptionMl, String tags, String created, String popularity, double[] embeddingAudio, double[] embeddingVisual, double[] embeddingUserDescription, double[] embeddingMlDescription) {
+    public Video(String uuid, String url, String title, String descriptionUser, String descriptionMl,
+                 String tags, String created, String popularity, double[] embeddingAudio, double[] embeddingVisual,
+                 double[] embeddingUserDescription, double[] embeddingMlDescription) {
         this.uuid = uuid;
         this.url = url;
         this.title = title;

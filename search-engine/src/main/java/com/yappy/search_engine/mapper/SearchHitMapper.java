@@ -21,22 +21,22 @@ public class SearchHitMapper {
                 sourceAsMap.getOrDefault("tags", "").toString(),
                 sourceAsMap.getOrDefault("created", "").toString(),
                 sourceAsMap.getOrDefault("popularity", "0").toString(),
-                convertToDoubleArray(sourceAsMap.get("embedding_audio")),
-                convertToDoubleArray(sourceAsMap.get("embedding_visual")),
-                convertToDoubleArray(sourceAsMap.get("embedding_user_description")),
-                convertToDoubleArray(sourceAsMap.get("embedding_ml_description"))
+                convertToFloatArray(sourceAsMap.getOrDefault("embedding_audio", "").toString()),
+                convertToFloatArray(sourceAsMap.getOrDefault("embedding_visual", "").toString()),
+                convertToFloatArray(sourceAsMap.getOrDefault("embedding_user_description", "").toString()),
+                convertToFloatArray(sourceAsMap.getOrDefault("embedding_ml_description", "").toString())
         );
     }
 
-    private double[] convertToDoubleArray(Object obj) {
+    private Double[] convertToDoubleArray(Object obj) {
         if (obj instanceof List<?>) {
             List<?> list = (List<?>) obj;
             return list.stream()
                     .filter(e -> e instanceof Number)
-                    .mapToDouble(e -> ((Number) e).doubleValue())
-                    .toArray();
+                    .map(e -> ((Number) e).doubleValue())
+                    .toArray(Double[]::new);
         }
-        return new double[768];
+        return new Double[0];
     }
 
     private double[] convertToFloatArray(String input) {
@@ -44,7 +44,11 @@ public class SearchHitMapper {
         String[] parts = input.split(",");
         double[] result = new double[parts.length];
         for (int i = 0; i < parts.length; i++) {
-            result[i] = Double.parseDouble(parts[i].trim());
+            if (parts[i] == null || parts[i].isEmpty()) {
+                result[i] = 0.0f;
+            } else {
+                result[i] = Double.parseDouble(parts[i].trim());
+            }
         }
         return result;
     }

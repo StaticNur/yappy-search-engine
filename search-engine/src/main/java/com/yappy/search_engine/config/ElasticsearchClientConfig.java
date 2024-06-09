@@ -26,7 +26,7 @@ public class ElasticsearchClientConfig extends
     public RestHighLevelClient elasticsearchClient() {
 
         RestClientBuilder builder = RestClient.builder(
-                        new HttpHost("odfe-node", 9200))
+                        new HttpHost("localhost", 9200))//odfe-node
                 .setRequestConfigCallback(
                         requestConfigBuilder -> requestConfigBuilder
                                 .setConnectionRequestTimeout(0));

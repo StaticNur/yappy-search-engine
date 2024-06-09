@@ -45,7 +45,7 @@
         display: none;
     }
 }
-/*-------window for edit--------*/
+/*-------window for filter/save--------*/
 .overlay {
     width: 100%;
     display: none;
@@ -74,6 +74,11 @@
     font-size: 32px;
     cursor: pointer;
 }
+.urlErrorInput{
+    color: red;
+    display: none;
+}
+
 
 /*Main content*/
 /* Общие стили для сообщения */

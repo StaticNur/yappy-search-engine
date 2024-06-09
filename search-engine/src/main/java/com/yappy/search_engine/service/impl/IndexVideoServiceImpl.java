@@ -17,6 +17,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
-public class VideoIndexServiceImpl implements VideoIndexService {
+public class IndexVideoServiceImpl implements VideoIndexService {
 
     private final static String INDEX_NAME = "videos";
     private final static int EMBEDDING_LENGTH = 768;
@@ -35,7 +36,7 @@ public class VideoIndexServiceImpl implements VideoIndexService {
     private final EmbeddingService embeddingService;
 
     @Autowired
-    public VideoIndexServiceImpl(RestHighLevelClient client, ObjectMapper objectMapper,
+    public IndexVideoServiceImpl(RestHighLevelClient client, ObjectMapper objectMapper,
                                  MediaContentService mediaContentService, EmbeddingService embeddingService) {
         this.client = client;
         this.objectMapper = objectMapper;
@@ -44,14 +45,16 @@ public class VideoIndexServiceImpl implements VideoIndexService {
     }
 
     @Override
+    @Transactional
     public void indexVideo(VideoDto videoDto) {
         MediaContent video = buildVideoFromDto(videoDto);
         try {
+            Video video2 = buildVideoFromMediaContent(video);
             mediaContentService.save(video);
 
             IndexRequest request = new IndexRequest(INDEX_NAME)
                     .id(video.getUuid().toString())
-                    .source(objectMapper.writeValueAsString(video), XContentType.JSON);
+                    .source(objectMapper.writeValueAsString(video2), XContentType.JSON);
             IndexResponse response = client.index(request, RequestOptions.DEFAULT);
             System.out.println("Indexed video with ID: " + response.getId());
         } catch (Exception e) {
@@ -67,7 +70,7 @@ public class VideoIndexServiceImpl implements VideoIndexService {
 
         List<MediaContent> videoBatch = mediaContentService.getAllVideo();
 
-        while (fromIndex < videoBatch.size()){
+        while (fromIndex < videoBatch.size()) {
             toIndex = Math.min(fromIndex + batchSize, videoBatch.size());
 
             List<MediaContent> batch = videoBatch.subList((int) fromIndex, (int) toIndex);
@@ -80,13 +83,13 @@ public class VideoIndexServiceImpl implements VideoIndexService {
 
     private BulkRequest prepareBulkRequest(List<MediaContent> allVideo) {
         BulkRequest bulkRequest = new BulkRequest();
-        //Video video;
+        Video video;
         for (MediaContent mediaContent : allVideo) {
             IndexRequest indexRequest = new IndexRequest(INDEX_NAME);
             indexRequest.id(mediaContent.getUuid().toString());
-            //video = buildVideoFromMediaContent(mediaContent);
+            video = buildVideoFromMediaContent(mediaContent);
             try {
-                indexRequest.source(objectMapper.writeValueAsString(mediaContent), XContentType.JSON);
+                indexRequest.source(objectMapper.writeValueAsString(video), XContentType.JSON);
                 bulkRequest.add(indexRequest);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -115,9 +118,13 @@ public class VideoIndexServiceImpl implements VideoIndexService {
         }
     }
 
-    private Video buildVideoFromMediaContent(MediaContent mediaContent){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
-        String formattedDate = mediaContent.getCreated().format(formatter);
+    private Video buildVideoFromMediaContent(MediaContent mediaContent) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        String formattedDate = (mediaContent.getCreated()).format(formatter);
+        Integer popularity = mediaContent.getPopularity();
+        if (popularity == null) {
+            popularity = 0;
+        }
         return new Video(
                 mediaContent.getUuid().toString(),
                 mediaContent.getUrl(),
@@ -126,15 +133,15 @@ public class VideoIndexServiceImpl implements VideoIndexService {
                 mediaContent.getDescriptionMl(),
                 mediaContent.getTags(),
                 formattedDate,
-                mediaContent.getPopularity().toString(),
-                mediaContent.getEmbeddingAudio(),
-                mediaContent.getEmbeddingVisual(),
-                mediaContent.getEmbeddingUserDescription(),
-                mediaContent.getEmbeddingMlDescription()
-                );
+                popularity.toString(),
+                convertToFloatArray(mediaContent.getEmbeddingAudio()),
+                convertToFloatArray(mediaContent.getEmbeddingVisual()),
+                convertToFloatArray(mediaContent.getEmbeddingUserDescription()),
+                convertToFloatArray(mediaContent.getEmbeddingMlDescription())
+        );
     }
 
-    private MediaContent buildVideoFromDto(VideoDto videoDto){
+    private MediaContent buildVideoFromDto(VideoDto videoDto) {
         MediaContent video = new MediaContent(UUID.randomUUID(),
                 videoDto.getUrl(),
                 videoDto.getTitle(),
@@ -142,16 +149,27 @@ public class VideoIndexServiceImpl implements VideoIndexService {
                 videoDto.getTags(),
                 LocalDateTime.now());
         embeddingService.getEmbeddingFromAudio(videoDto.getUrl());
-        video.setEmbeddingAudio(new double[EMBEDDING_LENGTH]);
+        String empty = "[0.0]";
+        video.setEmbeddingAudio(empty);
 
         embeddingService.getEmbeddingFromVisual(videoDto.getUrl());
-        video.setEmbeddingVisual(new double[EMBEDDING_LENGTH]);
+        video.setEmbeddingVisual(empty);
 
         embeddingService.getEmbeddingFromUserDescription(videoDto.getUrl());
-        video.setEmbeddingUserDescription(new double[EMBEDDING_LENGTH]);
+        video.setEmbeddingUserDescription(empty);
 
         embeddingService.getEmbeddingFromMlDescription(videoDto.getUrl());
-        video.setEmbeddingMlDescription(new double[EMBEDDING_LENGTH]);
+        video.setEmbeddingMlDescription(empty);
         return video;
+    }
+
+    private double[] convertToFloatArray(String input) {
+        input = input.replaceAll("[\\[\\]]", "");
+        String[] parts = input.split(",");
+        double[] result = new double[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            result[i] = Double.parseDouble(parts[i].trim());
+        }
+        return result;
     }
 }

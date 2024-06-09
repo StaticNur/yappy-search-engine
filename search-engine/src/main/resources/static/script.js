@@ -1,7 +1,6 @@
 var videos = [];
 let currentIndex = 0;
 
-
 /*Загрузка нового видео*/
 function showSaveForm(id, surname, name, otchestvo, job, birthday) {
     document.getElementById('saveFormOverlay').style.display = 'block';
@@ -16,36 +15,39 @@ function saveNewVideo() {
     const description = document.getElementById('description').value;
     const tags = document.getElementById('my-tags').value;
 
-    if(queryUrl){
+    if (url) {
         const startTime = performance.now();
-        try {
-            fetch(`http://localhost:8080/index`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    url: url,
-                    title: title,
-                    description: description,
-                    tags: tags
-                })
-            }).then(response => {
-                response.json()
-                if (response.status === 201) {
-                    return response.json();
-                } else {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+        fetch(`http://localhost:8080/index`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: url,
+                title: title,
+                description: description,
+                tags: tags
             })
+        })
+            .then(response => {
+            console.log("response.status"+response.status);
+            if (response.status === 201) {
+                return response.json();
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        })
             .then(data => {
-                showMessage(startTime, 'success', 'Загрузка видео успешно завершен.');
-            }).catch(error => {
-                showMessage(startTime, 'error', 'Произошла ошибка при загрузке видео. ${error.message}');
-            });
-        } catch (error) {
-            showMessage(startTime, 'error', 'Произошла ошибка при загрузке видео. ${error.message}');
-        }
+            showMessage(startTime, 'success', 'Загрузка видео успешно завершена.');
+        })
+            .catch(error => {
+            showMessage(startTime, 'error', `Произошла ошибка при загрузке видео. ${error.message}`);
+        });
+
+        hideSaveForm();
+        document.getElementById('urlErrorInput').style.display = 'none';
+    } else {
+        document.getElementById('urlErrorInput').style.display = 'block';
     }
 }
 
@@ -134,7 +136,7 @@ function playVideo(videoSrc, videoTitle, videoDescription, videoTags, videoCreat
     videoContainerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     var infoElement = document.getElementById('info');
-    infoElement.textContent = videoDescription;
+    infoElement.textContent = videoTitle + videoDescription;
 
     var tagsElement = document.getElementById('tags');
     tagsElement.textContent = videoTags;

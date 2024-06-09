@@ -41,10 +41,11 @@ public class ExcelDataMapper {
             mediaContent.setTitle("");
             mediaContent.setCreated(LocalDateTime.now());
 
-            mediaContent.setEmbeddingAudio(new double[0]);
-            mediaContent.setEmbeddingVisual(new double[0]);
-            mediaContent.setEmbeddingUserDescription(new double[0]);
-            mediaContent.setEmbeddingMlDescription(new double[0]);
+            String empty = "[0.0]";
+            mediaContent.setEmbeddingAudio(empty);
+            mediaContent.setEmbeddingVisual(empty);
+            mediaContent.setEmbeddingUserDescription(empty);
+            mediaContent.setEmbeddingMlDescription(empty);
 
 
             mediaContents.add(mediaContent);

@@ -2,6 +2,7 @@ package com.yappy.search_engine.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Entity
@@ -37,17 +38,17 @@ public class MediaContent {
     @Column(name = "popularity")
     private Integer popularity;
 
-    @Column(name = "embedding_audio", columnDefinition = "FLOAT8[]")
-    private double[] embeddingAudio;
+    @Column(name = "embedding_audio")
+    private String embeddingAudio;
 
-    @Column(name = "embedding_visual", columnDefinition = "FLOAT8[]")
-    private double[] embeddingVisual;
+    @Column(name = "embedding_visual")
+    private String embeddingVisual;
 
-    @Column(name = "embedding_user_description", columnDefinition = "FLOAT8[]")
-    private double[] embeddingUserDescription;
+    @Column(name = "embedding_user_description")
+    private String embeddingUserDescription;
 
-    @Column(name = "embedding_ml_description", columnDefinition = "FLOAT8[]")
-    private double[] embeddingMlDescription;
+    @Column(name = "embedding_ml_description")
+    private String embeddingMlDescription;
 
     public MediaContent() {
     }
@@ -60,7 +61,9 @@ public class MediaContent {
         this.created = created;
     }
 
-    public MediaContent(Long id, UUID uuid, String url, String title, String descriptionUser, String descriptionMl, String tags, LocalDateTime created, Integer popularity, double[] embeddingAudio, double[] embeddingVisual, double[] embeddingUserDescription, double[] embeddingMlDescription) {
+    public MediaContent(Long id, UUID uuid, String url, String title, String descriptionUser, String descriptionMl,
+                        String tags, LocalDateTime created, Integer popularity, String embeddingAudio,
+                        String embeddingVisual, String embeddingUserDescription, String embeddingMlDescription) {
         this.id = id;
         this.uuid = uuid;
         this.url = url;
@@ -148,35 +151,54 @@ public class MediaContent {
         this.popularity = popularity;
     }
 
-    public double[] getEmbeddingAudio() {
+    public String getEmbeddingAudio() {
         return embeddingAudio;
     }
 
-    public void setEmbeddingAudio(double[] embeddingAudio) {
+    public void setEmbeddingAudio(String embeddingAudio) {
         this.embeddingAudio = embeddingAudio;
     }
 
-    public double[] getEmbeddingVisual() {
+    public String getEmbeddingVisual() {
         return embeddingVisual;
     }
 
-    public void setEmbeddingVisual(double[] embeddingVisual) {
+    public void setEmbeddingVisual(String embeddingVisual) {
         this.embeddingVisual = embeddingVisual;
     }
 
-    public double[] getEmbeddingUserDescription() {
+    public String getEmbeddingUserDescription() {
         return embeddingUserDescription;
     }
 
-    public void setEmbeddingUserDescription(double[] embeddingUserDescription) {
+    public void setEmbeddingUserDescription(String embeddingUserDescription) {
         this.embeddingUserDescription = embeddingUserDescription;
     }
 
-    public double[] getEmbeddingMlDescription() {
+    public String getEmbeddingMlDescription() {
         return embeddingMlDescription;
     }
 
-    public void setEmbeddingMlDescription(double[] embeddingMlDescription) {
+    public void setEmbeddingMlDescription(String embeddingMlDescription) {
         this.embeddingMlDescription = embeddingMlDescription;
+    }
+
+    @Override
+    public String toString() {
+        return "MediaContent{" +
+               "id=" + id +
+               ", uuid=" + uuid +
+               ", url='" + url + '\'' +
+               ", title='" + title + '\'' +
+               ", descriptionUser='" + descriptionUser + '\'' +
+               ", descriptionMl='" + descriptionMl + '\'' +
+               ", tags='" + tags + '\'' +
+               ", created=" + created +
+               ", popularity=" + popularity +
+               ", embeddingAudio=" + embeddingAudio +
+               ", embeddingVisual=" + embeddingVisual +
+               ", embeddingUserDescription=" + embeddingUserDescription +
+               ", embeddingMlDescription=" + embeddingMlDescription +
+               '}';
     }
 }
