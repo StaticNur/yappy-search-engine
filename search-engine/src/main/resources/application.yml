@@ -6,16 +6,6 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    show-sql: true
-    hibernate:
-      show_sql: true
-      ddl-auto: create-drop
-      cache.use.query_cache: false
-      cache.use_second_level_cache: false
-      jdbc.batch_size: 1000
-      order_inserts: true
-
 embedding:
   service:
     url:

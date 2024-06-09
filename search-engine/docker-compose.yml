@@ -40,6 +40,10 @@ services:
       - "8080:8080"
     links:
       - "postgres_db:postgres_db"
+    volumes:
+      - type: bind
+        source: M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx
+        target: /opt/датасет-видео-тег.xlsx
     networks:
       - mynetwork
 

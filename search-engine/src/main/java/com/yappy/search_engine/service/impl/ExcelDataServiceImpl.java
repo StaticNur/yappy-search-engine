@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public class ExcelDataServiceImpl implements ExcelDataService {
-    public static final String PATH_FILE = "src/main/resources/датасет-видео-тег.xlsx";
+    public static final String PATH_FILE = "/opt/датасет-видео-тег.xlsx";
     private final ExcelParser excelParser;
     private final MediaContentService mediaContentService;
 
