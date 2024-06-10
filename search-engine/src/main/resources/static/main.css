@@ -74,7 +74,7 @@
     font-size: 32px;
     cursor: pointer;
 }
-.urlErrorInput{
+#urlErrorInput{
     color: red;
     display: none;
 }
@@ -215,6 +215,23 @@
     .comment-container {
         width: 100%;
     }
+    .navigation {
+        order: -1; /* Перемещает первый элемент вверх */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .first-nav {
+        order: -2;
+        margin-right: auto; /* Размещаем слева */
+    }
+    .last-nav {
+        z-index: -2;
+        margin-top: -52px; /* Размещаем справа */
+        align-items: flex-end;
+    }
 }
 
 
@@ -246,10 +263,19 @@
 
 /*footer*/
 @media (max-width: 770px) {
+    .cards-container {
+        justify-content: center;
+    }
     .logo img {
         max-width: 50%;
     }
 }
+@media (max-width: 550px) {
+    .cards-container {
+        justify-content: center;
+    }
+}
+
 .contacts ul {
     margin: 0;
     padding: 0;

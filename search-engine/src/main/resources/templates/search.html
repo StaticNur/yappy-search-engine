@@ -42,7 +42,7 @@
         <h2>Введите данные для сохранения</h2>
         <label class="form-check-label" for="url">Ссылка на видео<span style="color:red">*</span></label>
         <input type="text" class="form-control" placeholder="https://cdn-st.rutubelist.ru/media/..." id="url">
-        <span class="urlErrorInput">Ссылка на видео обязательно должна быть!</span>
+        <span id="urlErrorInput">Ссылка на видео обязательно должна быть!</span>
 
         <br>
         <label class="form-check-label" for="title">Заголовок видео</label>
@@ -93,7 +93,7 @@
 <div class="container" style="margin-top: 90px;">
     <p id="process-time">Найдено: 2345; Время: 0.03ms</p>
     <div class="main-container">
-        <div class="navigation">
+        <div class="navigation first-nav">
             <button class="btn" type="button" id="prevBtn">
                 <img src="https://cdn-icons-png.flaticon.com/128/32/32213.png" alt="Icon" height="25px">
             </button>
@@ -129,7 +129,7 @@
                 </button>
             </div>
         </div>
-        <div class="navigation">
+        <div class="navigation last-nav">
             <button class="btn" type="button" id="nextBtn">
                 <img src="https://cdn-icons-png.flaticon.com/128/32/32213.png" alt="Icon" height="25px">
             </button>
@@ -170,7 +170,7 @@
 
 <footer class="mt-auto bg-light">
     <div class="container" style="margin-top: 60px;">
-        <div class="row" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="row justify-content-center align-items-center text-center" style="padding-top: 40px; padding-bottom: 40px;">
             <div class="col-md-2 mb-2 mb-md-0">
                 <div class="logo">
                     <a href="search.html" class="header__logo">
@@ -179,36 +179,36 @@
                 </div>
             </div>
             <div class="col-md-4 mb-3 mb-md-0">
-                <div class="contacts">
+                <div class="contacts text-center">
                     <h4>Контакты</h4>
-                    <ul class="list-unstyled">
-                        <li>
-                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                 style="height:20px">
-                            <a href="https://t.me/bytebuddy">Бадма - Data Scientist/Backend</a>
-                        </li>
-                        <li>
-                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                 style="height:20px">
-                            <a href="https://t.me/rrretry">Вадим - Data Scientist/Backend</a>
-                        </li>
-                        <li>
-                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                 style="height:20px">
-                            <a href="https://t.me/Tatyana_ZhV">Татьяна - Data Scientist</a>
-                        </li>
-                        <li>
-                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                 style="height:20px">
-                            <a href="https://t.me/Alexander_E_S">Александр - Team lead</a>
-                        </li>
-                        <li>
-                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                 style="height:20px">
-                            <a href="https://t.me/orifov_nur">Мухаммаднур - Full-stack</a>
-                        </li>
+                    <ul class="list-unstyled text-left">
+                            <li class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                     style="height:20px; margin-right:5px">
+                                <a href="https://t.me/bytebuddy">Бадма - Backend</a>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                     style="height:20px; margin-right:5px">
+                                <a href="https://t.me/rrretry">Вадим - Data Scientist/Backend</a>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                     style="height:20px; margin-right:5px">
+                                <a href="https://t.me/Tatyana_ZhV">Татьяна - Data Scientist</a>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                     style="height:20px; margin-right:5px">
+                                <a href="https://t.me/Alexander_E_S">Александр - Team lead</a>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                     style="height:20px; margin-right:5px">
+                                <a href="https://t.me/orifov_nur">Мухаммаднур - Full-stack</a>
+                            </li>
 
-                    </ul>
+                        </ul>
                 </div>
             </div>
             <div class="col-md-4">
