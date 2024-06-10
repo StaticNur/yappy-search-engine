@@ -81,9 +81,11 @@ function sendSearchRequest() {
     const queryText = document.getElementById('queryText').value;
 
     console.log(`Запрос: ${queryText}`);  // Логирование запроса
+    const encodedQuery = encodeURIComponent(queryText);
+    console.log(`ЗапрencodedQueryс: ${encodedQuery}`);
     const startTime = performance.now();
     try {
-        fetch(`http://localhost:8080/search/text/lexicographic?query=${queryText}`, {
+        fetch(`http://localhost:8080/search/text/lexicographic?query=${encodedQuery}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -97,12 +99,15 @@ function sendSearchRequest() {
                 updateResults(data);
                 showMessage(startTime, 'success', 'Запрос выполнен успешно');
             } else {
+                clear();
                 showMessage(startTime, 'info', 'Видео не найдены.');
             }
         }).catch(error => {
+            clear();
             showMessage(startTime, 'error', error);
         });
     } catch (error) {
+        clear();
         showMessage(startTime, 'error', 'Произошла ошибка при отправке формы.');
     }
 }
@@ -246,6 +251,12 @@ function showMessage(startTime, type, message) {
     } else if (type === 'error') {
         messageElement.classList.add("text-danger");
     }
+}
+function clear() {
+    currentIndex = 0;
+    videos = [];
+    playVideo("Not found", "Not found", "Not found", "Not found", "Not found");
+    updateResults(videos);
 }
 
 document.getElementById("commentButton").addEventListener("click", function() {

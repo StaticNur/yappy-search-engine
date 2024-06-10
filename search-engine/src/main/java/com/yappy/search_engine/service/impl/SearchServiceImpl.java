@@ -79,7 +79,9 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public List<Video> searchVideoLexicographic(String query, int page, int size) {
         SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        System.out.println("query "+query);
         query = normalizeQuery(query);
+        System.out.println("normalizeQuery "+query);
         final int from = page <= 0 ? 0 : page * size;
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .from(from)
