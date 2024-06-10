@@ -5,6 +5,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.util.Arrays;
+
 @Document(indexName = "videos")
 public class Video {
     @Id
@@ -167,5 +169,23 @@ public class Video {
 
     public void setEmbeddingMlDescription(double[] embeddingMlDescription) {
         this.embeddingMlDescription = embeddingMlDescription;
+    }
+
+    @Override
+    public String toString() {
+        return "Video{" +
+               "uuid='" + uuid + '\'' +
+               ", url='" + url + '\'' +
+               ", title='" + title + '\'' +
+               ", descriptionUser='" + descriptionUser + '\'' +
+               ", descriptionMl='" + descriptionMl + '\'' +
+               ", tags='" + tags + '\'' +
+               ", created='" + created + '\'' +
+               ", popularity='" + popularity + '\'' +
+               ", embeddingAudio=" + Arrays.toString(embeddingAudio) +
+               ", embeddingVisual=" + Arrays.toString(embeddingVisual) +
+               ", embeddingUserDescription=" + Arrays.toString(embeddingUserDescription) +
+               ", embeddingMlDescription=" + Arrays.toString(embeddingMlDescription) +
+               '}';
     }
 }

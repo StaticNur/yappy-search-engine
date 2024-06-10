@@ -21,7 +21,12 @@
         <a href="https://yappy.media/" target="_blank" style="margin-right:2%">
             <img class="yappyLog" src="https://yappy.media/images/logo-full.svg" alt="Logo" height="25px">
         </a>
-        <input type="text" class="form-control" placeholder="Описание видео" id="queryText">
+
+        <div class="d-flex flex-column" style="width: 100%; position: relative;">
+            <input type="text" class="form-control" placeholder="Введите запрос..." id="queryText">
+            <ul id="suggestions-list"></ul>
+        </div>
+
         <div style="margin-right:10%" class="d-flex">
             <button class="btn btn-outline-secondary" type="button" id="btnSearch"
                     style="margin-right:10%; margin-left:10%">Поиск
@@ -228,5 +233,6 @@
 
 <script src="/static/script.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </body>
 </html>

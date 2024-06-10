@@ -67,18 +67,58 @@ document.getElementById("dateFilter").addEventListener("change", function() {
 
 
 /*Поиск*/
+document.getElementById('queryText').addEventListener('click', function() {
+    const suggestionsList = document.getElementById('suggestions-list');
+    suggestionsList.style.display = 'block';
+})
+
+document.getElementById('queryText').addEventListener('input', function() {
+    const query = this.value;
+    document.getElementById('suggestions-list').style.display = 'block';
+
+    fetch(`http://localhost:8080/search/autocomplete?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+        const suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.innerHTML = '';
+        data.forEach(suggestion => {
+            const listItem = document.createElement('li');
+            listItem.textContent = suggestion;
+            listItem.addEventListener('click', function(event) {
+                document.getElementById('queryText').value = suggestion;
+                //suggestionsList.innerHTML = '';
+
+                event.preventDefault();
+                sendSearchRequest()
+            });
+            suggestionsList.appendChild(listItem);
+        });
+    });
+});
+document.addEventListener('click', function(event) {
+    const inputField = document.getElementById('queryText');
+    const suggestionsList = document.getElementById('suggestions-list');
+    if (!inputField.contains(event.target) && !suggestionsList.contains(event.target)) {
+        suggestionsList.style.display = 'none';
+    }
+});
+
+
 document.getElementById('queryText').addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
         sendSearchRequest();
     }
 });
+
 document.getElementById('btnSearch').addEventListener('click', function (event) {
     event.preventDefault();
     sendSearchRequest();
 });
 function sendSearchRequest() {
     const queryText = document.getElementById('queryText').value;
+    const suggestionsList = document.getElementById('suggestions-list');
+    suggestionsList.style.display = 'none';
 
     console.log(`Запрос: ${queryText}`);  // Логирование запроса
     const encodedQuery = encodeURIComponent(queryText);

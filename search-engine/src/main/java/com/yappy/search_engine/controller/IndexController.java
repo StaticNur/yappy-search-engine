@@ -1,9 +1,8 @@
 package com.yappy.search_engine.controller;
 
-import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.Response;
 import com.yappy.search_engine.dto.VideoDto;
-import com.yappy.search_engine.service.VideoIndexService;
+import com.yappy.search_engine.service.IndexingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class IndexController {
 
-    private final VideoIndexService service;
+    private final IndexingService service;
 
     @Autowired
-    public IndexController(VideoIndexService service) {
+    public IndexController(IndexingService service) {
         this.service = service;
     }
 
@@ -33,5 +32,11 @@ public class IndexController {
     public ResponseEntity<Response> indexationDataInEs() {
         service.indexAllVideoFromDb();
         return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Данные успешно загружены из PostgreSQL в ElasticSearch"));
+    }
+
+    @PostMapping("/index/autocomplete")
+    public ResponseEntity<Response> indexationAutocompleteDataFromDbInEs() {
+        service.indexAutocompleteDataFromDbInEs();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
     }
 }

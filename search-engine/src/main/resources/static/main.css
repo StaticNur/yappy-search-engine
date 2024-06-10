@@ -46,6 +46,22 @@
     }
 }
 /*-------window for filter/save--------*/
+#suggestions-list{
+    background-color:#f4fffb;
+    z-index:2;
+    border-radius:5px;
+    position: absolute;
+    width: 100%;
+    list-style-type: none;
+    padding-left: 0px;
+    margin-top: 40px;
+}
+#suggestions-list li{
+    padding: 5px;
+}
+#suggestions-list li:hover {
+    background-color: #ccd5d1;
+}
 .overlay {
     width: 100%;
     display: none;

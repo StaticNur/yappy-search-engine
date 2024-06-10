@@ -89,9 +89,14 @@ public class SearchServiceImpl implements SearchService {
         String[] queryParts = query.split(" ");
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
-            boolQueryBuilder.should(QueryBuilders.wildcardQuery("title", "*" + part + "*"));
-            boolQueryBuilder.should(QueryBuilders.wildcardQuery("description", "*" + part + "*"));
-            boolQueryBuilder.should(QueryBuilders.wildcardQuery("tags", "*" + part + "*"));
+            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("title", "*" + part + "*"));
+            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("description", "*" + part + "*"));
+            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("tags", "*" + part + "*"));
+
+            boolQueryBuilder.should(QueryBuilders.matchQuery("title", part).fuzziness("AUTO"));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("description", part).fuzziness("AUTO"));
+            QueryBuilder tagQuery = QueryBuilders.matchQuery("tags", part).fuzziness("AUTO");
+            boolQueryBuilder.should(tagQuery.boost(2));
         }
         searchSourceBuilder.query(boolQueryBuilder);
 
@@ -112,14 +117,13 @@ public class SearchServiceImpl implements SearchService {
             Video video = searchHitMapper.getVideo(hit);
             videos.add(video);
         }
-        Collections.reverse(videos);
         return videos;
     }
 
     //TODO какие знаки можно не убирать?
     private String normalizeQuery(String query) {
         query = query.replaceAll("[,;!&$?№~@#%^*+:<>=]", "")
-                .replaceAll("[-.]", " ")
+                .replaceAll("[-._]", " ")
                 .replaceAll("/"," ")
                 .replaceAll("[\\s]+", " ");
         return query.trim();
