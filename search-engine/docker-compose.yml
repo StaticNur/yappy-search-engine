@@ -42,7 +42,7 @@ services:
       - "postgres_db:postgres_db"
     volumes:
       - type: bind
-        source: M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx
+        source: src/main/resources/датасет-видео-тег.xlsx
         target: /opt/датасет-видео-тег.xlsx
     networks:
       - mynetwork
