@@ -1,6 +1,6 @@
 var videos = [];
 let currentIndex = 0;
-const host = "localhost";//192.144.12.231
+const host = "192.144.12.231";//localhost
 
 /*Загрузка нового видео*/
 function showSaveForm(id, surname, name, otchestvo, job, birthday) {
