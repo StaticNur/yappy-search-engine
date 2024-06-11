@@ -1,5 +1,6 @@
 var videos = [];
 let currentIndex = 0;
+const host = "localhost";//192.144.12.231
 
 /*Загрузка нового видео*/
 function showSaveForm(id, surname, name, otchestvo, job, birthday) {
@@ -17,7 +18,7 @@ function saveNewVideo() {
 
     if (url) {
         const startTime = performance.now();
-        fetch(`http://192.144.12.231:8080/index`, {
+        fetch(`http://${host}:8080/index`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ document.getElementById('queryText').addEventListener('input', function() {
     const query = this.value;
     document.getElementById('suggestions-list').style.display = 'block';
 
-    fetch(`http://192.144.12.231:8080/search/autocomplete?query=${query}`)
+    fetch(`http://${host}:8080/search/autocomplete?query=${query}`)
         .then(response => response.json())
         .then(data => {
         const suggestionsList = document.getElementById('suggestions-list');
@@ -125,7 +126,7 @@ function sendSearchRequest() {
     console.log(`ЗапрencodedQueryс: ${encodedQuery}`);
     const startTime = performance.now();
     try {
-        fetch(`http://192.144.12.231:8080/search/text/lexicographic?query=${encodedQuery}`, {
+        fetch(`http://${host}:8080/search/text/lexicographic?query=${encodedQuery}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -192,7 +193,7 @@ function playVideo(videoSrc, videoTitle, videoDescription, videoTags, videoCreat
 
 function updateVideo(index) {
     const video = videos[index];
-    playVideo(video.url, video.title, video.description, video.tags, video.created);
+    playVideo(video.url, video.title, video.descriptionUser, video.tags, video.created);
 }
 
 function next() {
@@ -245,7 +246,7 @@ function updateResults(videos) {
         card.dataset.index = index;
         card.onclick = () => {
             currentIndex = index;
-            playVideo(video.url, video.title, video.description, video.tags, video.created);
+            playVideo(video.url, video.title, video.descriptionUser, video.tags, video.created);
             updateActiveCard();
         };
 
@@ -257,7 +258,7 @@ function updateResults(videos) {
         titleElement.style.display = 'none';
 
         const descriptionElement = document.createElement('p');
-        descriptionElement.textContent = video.description;
+        descriptionElement.textContent = video.descriptionUser;
         descriptionElement.style.display = 'none';
 
         const tagsElement = document.createElement('p');

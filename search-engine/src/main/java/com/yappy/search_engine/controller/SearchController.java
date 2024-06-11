@@ -37,7 +37,7 @@ public class SearchController {
     public List<Video> searchVideoLexicographic(@RequestParam String query,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "15") int size) {
-        return searchService.searchVideoLexicographic(query, page, size);
+        return searchService.searchVideoLexicographic(query.trim(), page, size);
     }
 
     @GetMapping("/search/embedding")

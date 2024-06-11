@@ -1,5 +1,6 @@
 package com.yappy.search_engine.service.impl;
 
+import com.yappy.search_engine.helper.Indices;
 import com.yappy.search_engine.service.SuggestionService;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -19,7 +20,6 @@ import java.util.Map;
 @Service
 public class SuggestionServiceImpl implements SuggestionService {
 
-    private final static String INDEX_NAME = "suggestions";
     private final RestHighLevelClient client;
 
     @Autowired
@@ -29,7 +29,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 
     @Override
     public List<String> getAutocomplete(String query, int page, int size) {
-        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        SearchRequest searchRequest = new SearchRequest(Indices.SUGGESTIONS_INDEX);
         final int from = page <= 0 ? 0 : page * size;
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .from(from)

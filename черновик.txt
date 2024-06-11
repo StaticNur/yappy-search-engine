@@ -2,6 +2,8 @@ ssh -i C:\Users\ZenBook/.ssh/cloudru_rsa user1@192.144.12.231
 
 scp M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx user1@192.144.12.231:/opt/yappy/
 
+mvn clean
+mvn clean install
 
 /opt/yappy/датасет-видео-тег.xlsx
 
@@ -31,11 +33,45 @@ sudo docker stop $(sudo docker ps -q)
 sudo docker-compose up
 
 sudo docker rm $(sudo docker ps -a -q)
+sudo docker rmi $(sudo docker images -q)
 
 sudo docker ps
 sudo docker stop f8f1a671bf89
 sudo docker rm f8f1a671bf89
 
+sudo docker images
+
+
+
+psql -U postgres -h 192.144.12.231 -p 5433
+
+sudo apt-get install postgresql-client
+
+postgres=# CREATE SCHEMA VIDEO_DATA;
+CREATE SCHEMA
+postgres=# CREATE TABLE VIDEO_DATA.videos (
+postgres(#     id BIGSERIAL PRIMARY KEY,
+postgres(#     uuid UUID NOT NULL,
+postgres(#     url VARCHAR(512) NOT NULL,
+postgres(#     title VARCHAR(255),
+postgres(#     description_user TEXT,
+postgres(#     description_ml TEXT,
+postgres(#     tags VARCHAR(255),
+postgres(#     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+postgres(#     popularity INT,
+postgres(#     embedding_audio TEXT NULL,
+postgres(#     embedding_visual TEXT NULL,
+postgres(#     embedding_user_description TEXT NULL,
+postgres(#     embedding_ml_description TEXT NULL
+postgres(# );
+CREATE TABLE
+
+sudo apt-get remove --purge postgresql-client-common
+sudo apt-get autoremove
+sudo apt-get clean
+
+
+sudo docker rmi $(sudo docker images -q)
 
 
   {

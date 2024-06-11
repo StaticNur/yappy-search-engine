@@ -13,19 +13,30 @@ public class SearchHitMapper {
     public Video getVideo(org.elasticsearch.search.SearchHit hit) {
         Map<String, Object> sourceAsMap = hit.getSourceAsMap();
         return new Video(
-                sourceAsMap.get("uuid").toString(),
-                sourceAsMap.getOrDefault("url", "").toString(),
-                sourceAsMap.getOrDefault("title", "").toString(),
-                sourceAsMap.getOrDefault("description_user", "").toString(),
-                sourceAsMap.getOrDefault("description_ml", "").toString(),
-                sourceAsMap.getOrDefault("tags", "").toString(),
-                sourceAsMap.getOrDefault("created", "").toString(),
-                sourceAsMap.getOrDefault("popularity", "0").toString(),
-                convertToFloatArray(sourceAsMap.getOrDefault("embedding_audio", "").toString()),
-                convertToFloatArray(sourceAsMap.getOrDefault("embedding_visual", "").toString()),
-                convertToFloatArray(sourceAsMap.getOrDefault("embedding_user_description", "").toString()),
-                convertToFloatArray(sourceAsMap.getOrDefault("embedding_ml_description", "").toString())
+                getStringValue(sourceAsMap, "uuid"),
+                getStringValue(sourceAsMap, "url"),
+                getStringValue(sourceAsMap, "title"),
+                getStringValue(sourceAsMap, "descriptionUser"),
+                getStringValue(sourceAsMap, "descriptionMl"),
+                getStringValue(sourceAsMap, "tags"),
+                getStringValue(sourceAsMap, "created"),
+                getStringValue(sourceAsMap, "popularity", "0"),
+                getStringValue(sourceAsMap, "hash"),
+                convertToFloatArray(getStringValue(sourceAsMap, "embeddingAudio")),
+                convertToFloatArray(getStringValue(sourceAsMap, "embeddingVisual")),
+                convertToFloatArray(getStringValue(sourceAsMap, "embeddingUserDescription")),
+                convertToFloatArray(getStringValue(sourceAsMap, "embeddingMlDescription"))
         );
+    }
+
+    private String getStringValue(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        return (value != null) ? value.toString() : "";
+    }
+
+    private String getStringValue(Map<String, Object> map, String key, String defaultValue) {
+        Object value = map.get(key);
+        return (value != null) ? value.toString() : defaultValue;
     }
 
     private Double[] convertToDoubleArray(Object obj) {

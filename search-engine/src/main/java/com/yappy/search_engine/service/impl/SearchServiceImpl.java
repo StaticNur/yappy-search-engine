@@ -2,12 +2,14 @@ package com.yappy.search_engine.service.impl;
 
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.SearchByEmbeddingDto;
+import com.yappy.search_engine.helper.Indices;
 import com.yappy.search_engine.mapper.SearchHitMapper;
 import com.yappy.search_engine.service.SearchService;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
@@ -25,7 +27,6 @@ import java.util.*;
 
 @Service
 public class SearchServiceImpl implements SearchService {
-    private final static String INDEX_NAME = "videos";
     private final ElasticsearchRestTemplate elasticsearchRestTemplate;
     private final RestHighLevelClient client;
     private final SearchHitMapper searchHitMapper;
@@ -41,17 +42,17 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public SearchHits<Video> searchVideosByEmbedding(SearchByEmbeddingDto embedding, int page, int size) {
         var script = """
-            if (doc['embedding'].size() == 0) {
-                return 0.0;
-            } else {
-                def score = cosineSimilarity(params.queryVector, 'embedding') + 1.0;
-                if (Double.isNaN(score) || score < 0) {
-                    return 0.0;
-                } else {
-                    return score;
-                }
-            }
-        """;
+                    if (doc['embedding'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embedding') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
         var params = Collections.singletonMap("queryVector", (Object) embedding.getEmbedding());
         var scriptType = ScriptType.INLINE;
         var language = "painless";
@@ -69,7 +70,7 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchHit<Video>> searchVideosByText(String query, int page, int size) {
         var searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.multiMatchQuery(query,
-                        "title", "description", "tags"))
+                        "title", "descriptionUser", "tags"))
                 .withPageable(PageRequest.of(page, size))
                 .build();
 
@@ -78,29 +79,39 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<Video> searchVideoLexicographic(String query, int page, int size) {
-        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
-        System.out.println("query "+query);
+        SearchRequest searchRequest = new SearchRequest(Indices.VIDEOS_INDEX);
+        System.out.println("query:" + query);
         query = normalizeQuery(query);
-        System.out.println("normalizeQuery "+query);
+        System.out.println("normalizeQuery:" + query);
         final int from = page <= 0 ? 0 : page * size;
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .from(from)
                 .size(size);
-        String[] queryParts = query.split(" ");
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("title", query)
+                .fuzziness(Fuzziness.AUTO));
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("descriptionUser", query)
+                .fuzziness(Fuzziness.AUTO));
+
+        String[] queryParts = query.split(" ");
+        BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
-            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("title", "*" + part + "*"));
-            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("description", "*" + part + "*"));
-            //boolQueryBuilder.should(QueryBuilders.wildcardQuery("tags", "*" + part + "*"));
-
-            boolQueryBuilder.should(QueryBuilders.matchQuery("title", part).fuzziness("AUTO"));
-            boolQueryBuilder.should(QueryBuilders.matchQuery("description", part).fuzziness("AUTO"));
-            QueryBuilder tagQuery = QueryBuilders.matchQuery("tags", part).fuzziness("AUTO");
-            boolQueryBuilder.should(tagQuery.boost(2));
+            System.out.println("tags:"+part);
+            if (part.startsWith("#")) {
+                part = part.replace("#", "");
+                tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part).boost(2.0f));
+            } else {
+                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part).fuzziness(Fuzziness.AUTO));
+            }
         }
-        searchSourceBuilder.query(boolQueryBuilder);
+        boolQueryBuilder.should(tagsQueryBuilder);
 
+        searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
+
 
         SearchResponse searchResponse;
         try {
@@ -122,9 +133,9 @@ public class SearchServiceImpl implements SearchService {
 
     //TODO какие знаки можно не убирать?
     private String normalizeQuery(String query) {
-        query = query.replaceAll("[,;!&$?№~@#%^*+:<>=]", "")
+        query = query.replaceAll("[,;!&$?№~@%^*+:<>=]", "")
                 .replaceAll("[-._]", " ")
-                .replaceAll("/"," ")
+                .replaceAll("/", " ")
                 .replaceAll("[\\s]+", " ");
         return query.trim();
     }

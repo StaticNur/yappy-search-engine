@@ -32,10 +32,10 @@ public class ExcelDataMapper {
             }
 
             String text = descriptionUser.toString();
-            if (text.matches("^(\\s*,\\s*)*$")) {
+            if (text.matches("^(\\s*,\\s*)*$")) {// только запятые
                 text = "";
             }
-            mediaContent.setDescriptionUser(text);
+            mediaContent.setDescriptionUser(text.trim());
             mediaContent.setTags(tagsBuilder.toString().trim());
 
             mediaContent.setTitle("");
