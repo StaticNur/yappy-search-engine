@@ -1,3 +1,43 @@
+ssh -i C:\Users\ZenBook/.ssh/cloudru_rsa user1@192.144.12.231
+
+scp M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx user1@192.144.12.231:/opt/yappy/
+
+
+/opt/yappy/датасет-видео-тег.xlsx
+
+sudo apt install openjdk-17-jdk
+
+sudo chown -R 1000:1000 elasticsearch_data
+sudo chmod -R 777 elasticsearch_data
+docker restart odfe-node
+
+sudo usermod -aG docker user1
+sudo service docker restart
+docker restart odfe-node
+
+sudo docker inspect odfe-node
+
+nc -zv 192.144.12.231 9200
+
+
+sudo docker restart $(sudo docker ps -q)
+
+sudo docker logs postgres_db
+sudo docker logs odfe-node
+sudo docker logs search-engine
+
+sudo docker stop $(sudo docker ps -q)
+
+sudo docker-compose up
+
+sudo docker rm $(sudo docker ps -a -q)
+
+sudo docker ps
+sudo docker stop f8f1a671bf89
+sudo docker rm f8f1a671bf89
+
+
+
   {
   "size": 5,
   "query": {
@@ -45,3 +85,54 @@ odfe-node:
     }
   }
 }
+
+
+CREATE SCHEMA VIDEO_DATA;
+
+CREATE TABLE VIDEO_DATA.videos (
+    id BIGSERIAL PRIMARY KEY,
+    uuid UUID NOT NULL,
+    url VARCHAR(512) NOT NULL,
+    title VARCHAR(255),
+    description_user TEXT,
+    description_ml TEXT,
+    tags VARCHAR(255),
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    popularity INT,
+    embedding_audio TEXT NULL, 
+    embedding_visual TEXT NULL, 
+    embedding_user_description TEXT NULL, 
+    embedding_ml_description TEXT NULL
+);
+
+commit 
+
+INSERT INTO VIDEO_DATA.videos (
+    uuid, url, title, description_user, description_ml, tags, popularity, embedding_audio, embedding_visual, embedding_user_description, embedding_ml_description
+) VALUES (
+    '123e4567-e89b-12d3-a456-426614174001', 
+    'http://example.com/video', 
+    'Sample Video', 
+    'User This is a sample video description.', 
+    'ML description.', 
+    34534655, 
+    '#sample, #video', 
+    ARRAY[1.23],
+    ARRAY[1.23, 4.56, 7.89,1.23, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89],
+    ARRAY[1.23,  7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89, 4.56, 7.89,1.23, 4.56, 7.89],
+    ARRAY[1.23, 4.56, 7.89, 4.56, 7.89]
+);
+
+
+select count(*) from video_data.videos;
+
+select * from video_data.videos;
+
+select * from video_data.videos where url='https://cdn-st.rutubelist.ru/media/39/6c/b31bc6864bef9d8a96814f1822ca/fhd.mp4';
+select * from video_data.videos where tags='#красивыедевушки #грудь #boobs #мороженное';
+
+
+
+DELETE FROM video_data.videos WHERE url='https://cdn-st.rutubelist.ru/media/46/12/f9758356405fabd9f8b58e2f421c/fhd.mp4';
+TRUNCATE TABLE video_data.videos;
+DROP TABLE IF EXISTS video_data.videos;

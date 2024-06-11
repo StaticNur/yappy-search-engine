@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Entity
-@Table(name = "videos", schema = "VIDEO_DATA")
+@Table(name = "videos", schema = "video_data")
 public class MediaContent {
 
     @Id
@@ -37,6 +37,9 @@ public class MediaContent {
 
     @Column(name = "popularity")
     private Integer popularity;
+
+    @Column(name = "hash")
+    private String hash;
 
     @Column(name = "embedding_audio")
     private String embeddingAudio;
@@ -149,6 +152,14 @@ public class MediaContent {
 
     public void setPopularity(Integer popularity) {
         this.popularity = popularity;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public String getEmbeddingAudio() {

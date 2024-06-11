@@ -5,14 +5,18 @@ import com.yappy.search_engine.service.ExcelDataService;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.util.parser.ExcelParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
 public class ExcelDataServiceImpl implements ExcelDataService {
-    public static final String PATH_FILE = "/opt/датасет-видео-тег.xlsx";//src/main/resources/датасет-видео-тег.xlsx
+    public static final String PATH_FILE = "датасет-видео-тег.xlsx";//src/main/resources/датасет-видео-тег.xlsx
     private final ExcelParser excelParser;
     private final MediaContentService mediaContentService;
 
@@ -26,8 +30,14 @@ public class ExcelDataServiceImpl implements ExcelDataService {
     public void importData() {
         List<VideoFromExcel> videoFromExcels;
         try {
-            videoFromExcels = excelParser.parseExcelFile(PATH_FILE);
-            mediaContentService.saveAll(videoFromExcels);
+            Resource resource = new ClassPathResource(PATH_FILE);
+            if (resource.exists()) {
+                InputStream inputStream = resource.getInputStream();
+                videoFromExcels = excelParser.parseExcelFile(inputStream);
+                mediaContentService.saveAll(videoFromExcels);
+            } else {
+                throw new FileNotFoundException("Файл не найден: " + PATH_FILE);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

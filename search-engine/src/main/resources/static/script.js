@@ -17,7 +17,7 @@ function saveNewVideo() {
 
     if (url) {
         const startTime = performance.now();
-        fetch(`http://localhost:8080/index`, {
+        fetch(`http://192.144.12.231:8080/index`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ document.getElementById('queryText').addEventListener('input', function() {
     const query = this.value;
     document.getElementById('suggestions-list').style.display = 'block';
 
-    fetch(`http://localhost:8080/search/autocomplete?query=${query}`)
+    fetch(`http://192.144.12.231:8080/search/autocomplete?query=${query}`)
         .then(response => response.json())
         .then(data => {
         const suggestionsList = document.getElementById('suggestions-list');
@@ -125,7 +125,7 @@ function sendSearchRequest() {
     console.log(`ЗапрencodedQueryс: ${encodedQuery}`);
     const startTime = performance.now();
     try {
-        fetch(`http://localhost:8080/search/text/lexicographic?query=${encodedQuery}`, {
+        fetch(`http://192.144.12.231:8080/search/text/lexicographic?query=${encodedQuery}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

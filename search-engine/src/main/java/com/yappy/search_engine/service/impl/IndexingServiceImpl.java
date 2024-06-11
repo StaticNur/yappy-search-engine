@@ -156,10 +156,8 @@ public class IndexingServiceImpl implements IndexingService {
             IndexRequest indexRequest = new IndexRequest(INDEX_VIDEO_NAME);
             indexRequest.id(mediaContent.getUuid().toString());
             video = buildVideoFromMediaContent(mediaContent);
-            System.out.println(video.toString());
             try {
                 indexRequest.source(objectMapper.writeValueAsString(video), XContentType.JSON);
-                System.out.println(indexRequest.toString());
                 bulkRequest.add(indexRequest);
             } catch (Exception e) {
                 throw new RuntimeException(e);

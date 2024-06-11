@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,10 +16,9 @@ import java.util.List;
 @Component
 public class ExcelParser {
 
-    public List<VideoFromExcel> parseExcelFile(String filePath) throws IOException {
+    public List<VideoFromExcel> parseExcelFile(InputStream inputStream) throws IOException {
         List<VideoFromExcel> videoEntries = new ArrayList<>();
-        FileInputStream excelFile = new FileInputStream(new File(filePath));
-        Workbook workbook = new XSSFWorkbook(excelFile);
+        Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
 
         Iterator<Row> rows = sheet.iterator();
