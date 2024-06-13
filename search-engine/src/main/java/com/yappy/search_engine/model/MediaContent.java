@@ -26,13 +26,19 @@ public class MediaContent {
     @Column(name = "description_user")
     private String descriptionUser;
 
-    @Column(name = "description_ml")
-    private String descriptionMl;
+    @Column(name = "transcription_audio")
+    private String transcriptionAudio;
+
+    @Column(name = "language_audio")
+    private String languageAudio;
+
+    @Column(name = "description_visual")
+    private String descriptionVisual;
 
     @Column(name = "tags")
     private String tags;
 
-    @Column(name = "created")
+    @Column(name = "created", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime created;
 
     @Column(name = "popularity")
@@ -50,36 +56,41 @@ public class MediaContent {
     @Column(name = "embedding_user_description")
     private String embeddingUserDescription;
 
-    @Column(name = "embedding_ml_description")
-    private String embeddingMlDescription;
+    @Column(name = "indexing_time")
+    private Long indexingTime;
 
     public MediaContent() {
     }
-    public MediaContent(UUID uuid, String url, String title, String descriptionUser, String tags, LocalDateTime created) {
+
+    public MediaContent(UUID uuid, String url, String title, String description, String tags, LocalDateTime created) {
         this.uuid = uuid;
         this.url = url;
         this.title = title;
-        this.descriptionUser = descriptionUser;
+        this.descriptionUser = description;
         this.tags = tags;
         this.created = created;
     }
 
-    public MediaContent(Long id, UUID uuid, String url, String title, String descriptionUser, String descriptionMl,
-                        String tags, LocalDateTime created, Integer popularity, String embeddingAudio,
-                        String embeddingVisual, String embeddingUserDescription, String embeddingMlDescription) {
+    public MediaContent(Long id, UUID uuid, String url, String title, String descriptionUser, String transcriptionAudio,
+                        String languageAudio, String descriptionVisual, String tags, LocalDateTime created,
+                        Integer popularity, String hash, String embeddingAudio, String embeddingVisual,
+                        String embeddingUserDescription, Long indexingTime) {
         this.id = id;
         this.uuid = uuid;
         this.url = url;
         this.title = title;
         this.descriptionUser = descriptionUser;
-        this.descriptionMl = descriptionMl;
+        this.transcriptionAudio = transcriptionAudio;
+        this.languageAudio = languageAudio;
+        this.descriptionVisual = descriptionVisual;
         this.tags = tags;
         this.created = created;
         this.popularity = popularity;
+        this.hash = hash;
         this.embeddingAudio = embeddingAudio;
         this.embeddingVisual = embeddingVisual;
         this.embeddingUserDescription = embeddingUserDescription;
-        this.embeddingMlDescription = embeddingMlDescription;
+        this.indexingTime = indexingTime;
     }
 
     public Long getId() {
@@ -122,12 +133,28 @@ public class MediaContent {
         this.descriptionUser = descriptionUser;
     }
 
-    public String getDescriptionMl() {
-        return descriptionMl;
+    public String getTranscriptionAudio() {
+        return transcriptionAudio;
     }
 
-    public void setDescriptionMl(String descriptionMl) {
-        this.descriptionMl = descriptionMl;
+    public void setTranscriptionAudio(String transcriptionAudio) {
+        this.transcriptionAudio = transcriptionAudio;
+    }
+
+    public String getLanguageAudio() {
+        return languageAudio;
+    }
+
+    public void setLanguageAudio(String languageAudio) {
+        this.languageAudio = languageAudio;
+    }
+
+    public String getDescriptionVisual() {
+        return descriptionVisual;
+    }
+
+    public void setDescriptionVisual(String descriptionVisual) {
+        this.descriptionVisual = descriptionVisual;
     }
 
     public String getTags() {
@@ -186,12 +213,12 @@ public class MediaContent {
         this.embeddingUserDescription = embeddingUserDescription;
     }
 
-    public String getEmbeddingMlDescription() {
-        return embeddingMlDescription;
+    public Long getIndexingTime() {
+        return indexingTime;
     }
 
-    public void setEmbeddingMlDescription(String embeddingMlDescription) {
-        this.embeddingMlDescription = embeddingMlDescription;
+    public void setIndexingTime(Long indexingTime) {
+        this.indexingTime = indexingTime;
     }
 
     @Override
@@ -202,14 +229,17 @@ public class MediaContent {
                ", url='" + url + '\'' +
                ", title='" + title + '\'' +
                ", descriptionUser='" + descriptionUser + '\'' +
-               ", descriptionMl='" + descriptionMl + '\'' +
+               ", transcriptionAudio='" + transcriptionAudio + '\'' +
+               ", languageAudio='" + languageAudio + '\'' +
+               ", descriptionVisual='" + descriptionVisual + '\'' +
                ", tags='" + tags + '\'' +
                ", created=" + created +
                ", popularity=" + popularity +
-               ", embeddingAudio=" + embeddingAudio +
-               ", embeddingVisual=" + embeddingVisual +
-               ", embeddingUserDescription=" + embeddingUserDescription +
-               ", embeddingMlDescription=" + embeddingMlDescription +
+               ", hash='" + hash + '\'' +
+               ", embeddingAudio='" + embeddingAudio + '\'' +
+               ", embeddingVisual='" + embeddingVisual + '\'' +
+               ", embeddingUserDescription='" + embeddingUserDescription + '\'' +
+               ", indexingTime='" + indexingTime + '\'' +
                '}';
     }
 }

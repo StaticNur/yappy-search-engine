@@ -7,7 +7,9 @@ public class Video {
     private String url;
     private String title;
     private String descriptionUser;
-    private String descriptionMl;
+    private String transcriptionAudio;
+    private String languageAudio;
+    private String descriptionVisual;
     private String tags;
     private String created;
     private String popularity;
@@ -15,45 +17,20 @@ public class Video {
     private double[] embeddingAudio;
     private double[] embeddingVisual;
     private double[] embeddingUserDescription;
-    private double[] embeddingMlDescription;
 
     public Video() {
     }
 
-    public Video(String uuid, String url, String title, String descriptionUser, String tags, String created) {
+    public Video(String uuid, String url, String title, String descriptionUser, String transcriptionAudio,
+                 String languageAudio, String descriptionVisual, String tags, String created, String popularity,
+                 String hash, double[] embeddingAudio, double[] embeddingVisual, double[] embeddingUserDescription) {
         this.uuid = uuid;
         this.url = url;
         this.title = title;
         this.descriptionUser = descriptionUser;
-        this.tags = tags;
-        this.created = created;
-    }
-
-    public Video(String uuid, String url, String title, String descriptionUser, String descriptionMl,
-                 String tags, String created, String popularity, double[] embeddingAudio, double[] embeddingVisual,
-                 double[] embeddingUserDescription, double[] embeddingMlDescription) {
-        this.uuid = uuid;
-        this.url = url;
-        this.title = title;
-        this.descriptionUser = descriptionUser;
-        this.descriptionMl = descriptionMl;
-        this.tags = tags;
-        this.created = created;
-        this.popularity = popularity;
-        this.embeddingAudio = embeddingAudio;
-        this.embeddingVisual = embeddingVisual;
-        this.embeddingUserDescription = embeddingUserDescription;
-        this.embeddingMlDescription = embeddingMlDescription;
-    }
-
-    public Video(String uuid, String url, String title, String descriptionUser, String descriptionMl, String tags,
-                 String created, String popularity, String hash, double[] embeddingAudio, double[] embeddingVisual,
-                 double[] embeddingUserDescription, double[] embeddingMlDescription) {
-        this.uuid = uuid;
-        this.url = url;
-        this.title = title;
-        this.descriptionUser = descriptionUser;
-        this.descriptionMl = descriptionMl;
+        this.transcriptionAudio = transcriptionAudio;
+        this.languageAudio = languageAudio;
+        this.descriptionVisual = descriptionVisual;
         this.tags = tags;
         this.created = created;
         this.popularity = popularity;
@@ -61,15 +38,6 @@ public class Video {
         this.embeddingAudio = embeddingAudio;
         this.embeddingVisual = embeddingVisual;
         this.embeddingUserDescription = embeddingUserDescription;
-        this.embeddingMlDescription = embeddingMlDescription;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     public String getUuid() {
@@ -104,12 +72,28 @@ public class Video {
         this.descriptionUser = descriptionUser;
     }
 
-    public String getDescriptionMl() {
-        return descriptionMl;
+    public String getTranscriptionAudio() {
+        return transcriptionAudio;
     }
 
-    public void setDescriptionMl(String descriptionMl) {
-        this.descriptionMl = descriptionMl;
+    public void setTranscriptionAudio(String transcriptionAudio) {
+        this.transcriptionAudio = transcriptionAudio;
+    }
+
+    public String getLanguageAudio() {
+        return languageAudio;
+    }
+
+    public void setLanguageAudio(String languageAudio) {
+        this.languageAudio = languageAudio;
+    }
+
+    public String getDescriptionVisual() {
+        return descriptionVisual;
+    }
+
+    public void setDescriptionVisual(String descriptionVisual) {
+        this.descriptionVisual = descriptionVisual;
     }
 
     public String getTags() {
@@ -136,6 +120,14 @@ public class Video {
         this.popularity = popularity;
     }
 
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
     public double[] getEmbeddingAudio() {
         return embeddingAudio;
     }
@@ -160,14 +152,6 @@ public class Video {
         this.embeddingUserDescription = embeddingUserDescription;
     }
 
-    public double[] getEmbeddingMlDescription() {
-        return embeddingMlDescription;
-    }
-
-    public void setEmbeddingMlDescription(double[] embeddingMlDescription) {
-        this.embeddingMlDescription = embeddingMlDescription;
-    }
-
     @Override
     public String toString() {
         return "Video{" +
@@ -175,15 +159,16 @@ public class Video {
                ", url='" + url + '\'' +
                ", title='" + title + '\'' +
                ", descriptionUser='" + descriptionUser + '\'' +
-               ", descriptionMl='" + descriptionMl + '\'' +
+               ", transcriptionAudio='" + transcriptionAudio + '\'' +
+               ", languageAudio='" + languageAudio + '\'' +
+               ", descriptionVisual='" + descriptionVisual + '\'' +
                ", tags='" + tags + '\'' +
                ", created='" + created + '\'' +
                ", popularity='" + popularity + '\'' +
                ", hash='" + hash + '\'' +
                ", embeddingAudio=" + Arrays.toString(embeddingAudio) +
                ", embeddingVisual=" + Arrays.toString(embeddingVisual) +
-               ", embeddingUserDescription=" + Arrays.toString(embeddingUserDescription) +
-               ", embeddingMlDescription=" + Arrays.toString(embeddingMlDescription) +
+               ", embeddingUserDescription=" + Arrays.toString(embeddingUserDescription) + '\'' +
                '}';
     }
 }

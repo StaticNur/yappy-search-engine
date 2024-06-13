@@ -1,9 +1,10 @@
 package com.yappy.search_engine.service;
 
 import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.model.MediaContent;
 
 public interface IndexingService {
-    void indexVideo(VideoDto videoDto);
+    MediaContent indexVideo(VideoDto videoDto);
     void indexAllVideoFromDb();
 
     void indexAutocompleteDataFromDbInEs();

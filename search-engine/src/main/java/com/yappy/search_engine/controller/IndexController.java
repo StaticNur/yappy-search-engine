@@ -2,6 +2,7 @@ package com.yappy.search_engine.controller;
 
 import com.yappy.search_engine.dto.Response;
 import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.service.IndexingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,20 +24,23 @@ public class IndexController {
     }
 
     @PostMapping("/index")
-    public ResponseEntity<Response> index(@RequestBody VideoDto videoDto) {
-        service.indexVideo(videoDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Данные успешно индексированы в ElasticSearch"));
+    public ResponseEntity<MediaContent> index(@RequestBody VideoDto videoDto) {
+        MediaContent mediaContent = service.indexVideo(videoDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mediaContent);
     }
 
     @PostMapping("/index-all")
     public ResponseEntity<Response> indexationDataInEs() {
         service.indexAllVideoFromDb();
-        return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Данные успешно загружены из PostgreSQL в ElasticSearch"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Response("Данные успешно загружены из PostgreSQL в ElasticSearch"));
     }
 
     @PostMapping("/index/autocomplete")
     public ResponseEntity<Response> indexationAutocompleteDataFromDbInEs() {
         service.indexAutocompleteDataFromDbInEs();
-        return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
     }
 }

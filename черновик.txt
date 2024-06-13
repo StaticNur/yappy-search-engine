@@ -1,5 +1,9 @@
 ssh -i C:\Users\ZenBook/.ssh/cloudru_rsa user1@192.144.12.231
 
+cd yappy-search-engine/search-engine
+
+rm -rf elasticsearch_data pg_data
+
 scp M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx user1@192.144.12.231:/opt/yappy/
 
 mvn clean
@@ -40,6 +44,10 @@ sudo docker stop f8f1a671bf89
 sudo docker rm f8f1a671bf89
 
 sudo docker images
+
+sudo docker-compose up search-engine
+
+
 
 
 

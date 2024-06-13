@@ -17,15 +17,16 @@ public class SearchHitMapper {
                 getStringValue(sourceAsMap, "url"),
                 getStringValue(sourceAsMap, "title"),
                 getStringValue(sourceAsMap, "descriptionUser"),
-                getStringValue(sourceAsMap, "descriptionMl"),
+                getStringValue(sourceAsMap, "transcriptionAudio"),
+                getStringValue(sourceAsMap, "languageAudio"),
+                getStringValue(sourceAsMap, "descriptionVisual"),
                 getStringValue(sourceAsMap, "tags"),
                 getStringValue(sourceAsMap, "created"),
                 getStringValue(sourceAsMap, "popularity", "0"),
                 getStringValue(sourceAsMap, "hash"),
                 convertToFloatArray(getStringValue(sourceAsMap, "embeddingAudio")),
                 convertToFloatArray(getStringValue(sourceAsMap, "embeddingVisual")),
-                convertToFloatArray(getStringValue(sourceAsMap, "embeddingUserDescription")),
-                convertToFloatArray(getStringValue(sourceAsMap, "embeddingMlDescription"))
+                convertToFloatArray(getStringValue(sourceAsMap, "embeddingUserDescription"))
         );
     }
 

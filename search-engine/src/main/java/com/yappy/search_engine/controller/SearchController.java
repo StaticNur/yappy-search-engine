@@ -2,6 +2,7 @@ package com.yappy.search_engine.controller;
 
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.SearchByEmbeddingDto;
+import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.SearchService;
 import com.yappy.search_engine.service.SuggestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,15 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
-    private SuggestionService suggestionService;
+    private final SuggestionService suggestionService;
+    private final MediaContentService mediaContentService;
 
     @Autowired
-    public SearchController(SearchService searchService, SuggestionService suggestionService) {
+    public SearchController(SearchService searchService, SuggestionService suggestionService,
+                            MediaContentService mediaContentService) {
         this.searchService = searchService;
         this.suggestionService = suggestionService;
+        this.mediaContentService = mediaContentService;
     }
 
     @GetMapping("/search/text")
@@ -52,5 +56,10 @@ public class SearchController {
                                      @RequestParam(defaultValue = "10") int size,
                                      @RequestParam String query) {
         return suggestionService.getAutocomplete(query, page, size);
+    }
+
+    @GetMapping("/indexing-time")
+    public String indexingTime(@RequestParam String uuid) {
+        return mediaContentService.getIndexingTime(uuid);
     }
 }
