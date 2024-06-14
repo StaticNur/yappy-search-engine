@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Service
@@ -34,11 +35,46 @@ public class ExternalApiClient implements ApiClient {
     @Override
     public TranscribedAudioResponse getTranscription(String videoUrl) {
         String url = buildUrl(transcriptionUrl, "video_url", videoUrl);
-        return retryTemplate.execute(context ->
+        /*return retryTemplate.execute(context ->
                 executePostRequest(url,
                         null,
                         TranscribedAudioResponse.class,
-                        this::processTranscriptionResponse));
+                        this::processTranscriptionResponse));*/
+        return retryTemplate.execute(context ->{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+
+            ResponseEntity<Object[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Object[].class
+            );
+            TranscribedAudioResponse transcription = new TranscribedAudioResponse();
+            HttpStatus statusCode = response.getStatusCode();
+
+            if (statusCode == HttpStatus.OK) {
+                Object[] responseBody = response.getBody();
+                if (responseBody != null && responseBody.length > 0) {
+                    transcription.setText(responseBody[0] != null ? responseBody[0].toString() : "");
+
+                    if (responseBody.length > 1 && responseBody[1] instanceof List<?> languagesList) {
+                        if (!languagesList.isEmpty() && languagesList.get(0) instanceof List<?> firstLanguageEntry) {
+                            if (!firstLanguageEntry.isEmpty()) {
+                                transcription.setLanguages(firstLanguageEntry.get(0).toString());
+                            }
+                        }
+                    }
+                    System.out.println("Text: " + transcription.getText());
+                    System.out.println("Languages: " + transcription.getLanguages());
+                }
+            } else {
+                System.out.println("Error: " + statusCode);
+            }
+            return transcription;
+        });
     }
 
     @Override
