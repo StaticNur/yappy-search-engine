@@ -1,6 +1,7 @@
 package com.yappy.search_engine.service.impl;
 
 import com.yappy.search_engine.mapper.ExcelDataMapper;
+import com.yappy.search_engine.model.EmbeddingAudio;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.model.TranscriptionAudio;
 import com.yappy.search_engine.model.VideoFromExcel;
@@ -89,6 +90,37 @@ public class MediaContentServiceImpl implements MediaContentService {
 
     @Override
     @Transactional
+    public void updateAllTranscriptionsEmbedding(List<EmbeddingAudio> embeddingAudios) {
+        int numThreads = Runtime.getRuntime().availableProcessors(); // Используйте количество процессоров
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+        for (int i = 0; i < embeddingAudios.size(); i += BATCH_SIZE) {
+            int startIndex = i;
+            int endIndex = Math.min(i + BATCH_SIZE, embeddingAudios.size());
+            List<EmbeddingAudio> batchList = embeddingAudios.subList(startIndex, endIndex);
+
+            executor.submit(() -> {
+                try {
+                    mediaContentRepositoryImpl.updateEmbeddingAudioBatch(batchList);
+                    System.out.println("Отправлено " + startIndex + " пачка EmbeddingAudio");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    @Override
+    @Transactional
     public void updateIndexingTime(String url, Long time) {
         mediaContentRepository.updateIndexingTime(url, time);
     }
@@ -97,19 +129,6 @@ public class MediaContentServiceImpl implements MediaContentService {
     public String getIndexingTime(String uuid) {
         return Objects.toString(mediaContentRepository.findIndexingTime(UUID.fromString(uuid)), "0");
     }
-
-    /*@Override
-    @Transactional
-    public void updateAllTranscriptions(List<TranscriptionAudio> transcriptionAudios) {
-        int batchSize = 10000; // Указываете желаемый размер пакета
-        for (int i = 0; i < transcriptionAudios.size(); i += batchSize) {
-            int endIndex = Math.min(i + batchSize, transcriptionAudios.size());
-            List<TranscriptionAudio> batchList = transcriptionAudios.subList(i, endIndex);
-
-            System.out.println("Отправлено "+i+" пачка транскрипции");
-            mediaContentRepositoryImpl.updateTranscriptionsBatch(batchList);
-        }
-    }*/
 }
 
 

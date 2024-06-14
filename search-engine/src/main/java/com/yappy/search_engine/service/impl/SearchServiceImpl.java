@@ -106,7 +106,7 @@ public class SearchServiceImpl implements SearchService {
             System.out.println("tags:" + part);
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
-                tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part).boost(2.0f));
+                tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part).boost(2.0f));
             } else {
                 tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part).fuzziness(Fuzziness.AUTO));
             }
@@ -130,19 +130,14 @@ public class SearchServiceImpl implements SearchService {
         return new VideoSearchResult(videos, totalHits);
     }
 
-
     @Override
-    public VideoSearchResult getVideoByDate(final String date) {
-        final SearchRequest request = SearchUtil.buildSearchRequest(
-                Indices.VIDEOS_INDEX,
-                "created",
-                date
-        );
+    public VideoSearchResult getRecommendations() {
+        final SearchRequest request = SearchUtil.buildSearchRecommendationRequest(Indices.VIDEOS_INDEX);
         return searchInternal(request);
     }
 
     @Override
-    public VideoSearchResult search(SearchRequestDto dto, String date) {
+    public VideoSearchResult searchWithFilter(SearchRequestDto dto, String date) {
         SearchRequest request;
         System.out.println(dto.toString());
         if (dto.getTypeSearch().equals("embedding")) {

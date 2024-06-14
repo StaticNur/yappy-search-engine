@@ -34,9 +34,9 @@ public class MigrationController {
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 
-    @PostMapping("/import/popularity")
+    @PostMapping("/import/transcription-embedding")
     public ResponseEntity<Response> importTagsFromExcel() {
-        excelDataService.importDataPopularity();
+        excelDataService.importDataEmbedding();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 }

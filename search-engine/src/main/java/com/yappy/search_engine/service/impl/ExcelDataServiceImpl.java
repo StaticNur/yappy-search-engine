@@ -2,10 +2,10 @@ package com.yappy.search_engine.service.impl;
 
 import com.yappy.search_engine.helper.TagFrequencyCalculationService;
 import com.yappy.search_engine.mapper.ExcelDataMapper;
+import com.yappy.search_engine.model.EmbeddingAudio;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.model.VideoFromExcel;
 import com.yappy.search_engine.service.ImportExcelService;
-import com.yappy.search_engine.service.ImportJsonService;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.util.parser.ExcelParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Map;
 @Service
 public class ExcelDataServiceImpl implements ImportExcelService {
     public static final String PATH_FILE_WITH_VIDEO = "датасет-видео-тег.xlsx";//src/main/resources/датасет-видео-тег.xlsx
-    public static final String PATH_FILE_WITH_POPULARITY = "sorted_tags.xlsx";
+    public static final String PATH_FILE_WITH_AUDIO_EMBEDDING = "Mclip_transcription_embedding_2000.xlsx";
     private final ExcelParser excelParser;
     private final MediaContentService mediaContentService;
     private final ExcelDataMapper excelDataMapper;
@@ -44,7 +44,7 @@ public class ExcelDataServiceImpl implements ImportExcelService {
             Resource resource = new ClassPathResource(PATH_FILE_WITH_VIDEO);
             if (resource.exists()) {
                 try(InputStream inputStream = resource.getInputStream()) {
-                    videoFromExcels = excelParser.parseExcelFile(inputStream);
+                    videoFromExcels = excelParser.parseMainExcelFile(inputStream);
                     Map<String, Integer> tagFrequency = tagFrequencyCalculationService.getMapTag(videoFromExcels);
                     List<MediaContent> mediaContents = excelDataMapper.buildMediaContentFromVideo(videoFromExcels, tagFrequency);
 
@@ -59,7 +59,20 @@ public class ExcelDataServiceImpl implements ImportExcelService {
     }
 
     @Override
-    public void importDataPopularity() {
-
+    public void importDataEmbedding() {
+        List<EmbeddingAudio> embeddingAudios;
+        try {
+            Resource resource = new ClassPathResource(PATH_FILE_WITH_AUDIO_EMBEDDING);
+            if (resource.exists()) {
+                try(InputStream inputStream = resource.getInputStream()) {
+                    embeddingAudios = excelParser.parseEmbeddingExcelFile(inputStream);
+                    mediaContentService.updateAllTranscriptionsEmbedding(embeddingAudios);
+                }
+            } else {
+                throw new FileNotFoundException("Файл не найден: " + PATH_FILE_WITH_VIDEO);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

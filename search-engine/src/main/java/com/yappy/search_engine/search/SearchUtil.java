@@ -6,21 +6,32 @@ import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 public final class SearchUtil {
 
-    private SearchUtil() {
-    }
+    private SearchUtil() {}
 
-    public static SearchRequest buildSearchRequest(final String indexName,
-                                                   final String field,
-                                                   final String date) {
+    public static SearchRequest buildSearchRecommendationRequest(final String indexName) {
         try {
-            final SearchSourceBuilder builder = new SearchSourceBuilder()
-                    .postFilter(getQueryBuilder(field, date));
+            final int from = 0;
+            final int size = 15;
+
+            // Создаем BoolQueryBuilder для исключения слов
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+                    .mustNot(QueryBuilders.matchQuery("tags", "#красивыедевушки"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#boobs"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#sexy"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#sexygirl"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#bigbooty"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#bikini"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#bikinigirl"))
+                    .mustNot(QueryBuilders.matchQuery("tags", "#ass"));
+
+            SearchSourceBuilder builder = new SearchSourceBuilder()
+                    .from(from)
+                    .size(size)
+                    .query(boolQuery)
+                    .sort("popularity", SortOrder.DESC);
 
             final SearchRequest request = new SearchRequest(indexName);
             request.source(builder);

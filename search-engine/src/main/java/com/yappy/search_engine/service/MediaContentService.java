@@ -1,5 +1,6 @@
 package com.yappy.search_engine.service;
 
+import com.yappy.search_engine.model.EmbeddingAudio;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.model.TranscriptionAudio;
 import com.yappy.search_engine.model.VideoFromExcel;
@@ -15,8 +16,8 @@ public interface MediaContentService {
     void save(MediaContent video);
 
     void updateAllTranscriptions(List<TranscriptionAudio> transcriptionAudios);
+    void updateAllTranscriptionsEmbedding(List<EmbeddingAudio> embeddingAudios);
 
     void updateIndexingTime(String url, Long time);
-
     String getIndexingTime(String uuid);
 }

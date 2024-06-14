@@ -15,7 +15,7 @@ public interface SearchService {
     List<SearchHit<Video>> searchVideosByText(String query, int page, int size);
     VideoSearchResult searchVideoLexicographic(String query, int page, int size);
 
-    VideoSearchResult getVideoByDate(String date);
+    VideoSearchResult getRecommendations();
 
-    VideoSearchResult search(SearchRequestDto dto, String date);
+    VideoSearchResult searchWithFilter(SearchRequestDto dto, String date);
 }

@@ -35,14 +35,20 @@ public class ExternalApiClient implements ApiClient {
     public TranscribedAudioResponse getTranscription(String videoUrl) {
         String url = buildUrl(transcriptionUrl, "video_url", videoUrl);
         return retryTemplate.execute(context ->
-                executePostRequest(url, null, TranscribedAudioResponse.class, this::processTranscriptionResponse));
+                executePostRequest(url,
+                        null,
+                        TranscribedAudioResponse.class,
+                        this::processTranscriptionResponse));
     }
 
     @Override
     public VisualDescription getVisualDescription(String videoUrl) {
         String url = buildUrl(visualDescriptionUrl, "video_url", videoUrl);
         return retryTemplate.execute(context ->
-                executePostRequest(url, null, VisualDescription.class, this::processVisualDescriptionResponse));
+                executePostRequest(url,
+                        null,
+                        VisualDescription.class,
+                        this::processVisualDescriptionResponse));
     }
 
     /*@Override

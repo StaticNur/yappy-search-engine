@@ -239,7 +239,7 @@ public class IndexingServiceImpl implements IndexingService {
 
     private void videoDataEnriched(MediaContent videoForPostgres) {
         String url = videoForPostgres.getUrl();
-        TranscribedAudioResponse transcriptionAudio = new TranscribedAudioResponse("Text","Languages");//apiClient.getTranscription(url);
+        TranscribedAudioResponse transcriptionAudio = apiClient.getTranscription(url);//new TranscribedAudioResponse("Text","Languages");
         videoForPostgres.setTranscriptionAudio(transcriptionAudio.getText());
         videoForPostgres.setLanguageAudio(transcriptionAudio.getLanguages());
 

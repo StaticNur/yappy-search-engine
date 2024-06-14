@@ -1,5 +1,6 @@
 package com.yappy.search_engine.repository.impl;
 
+import com.yappy.search_engine.model.EmbeddingAudio;
 import com.yappy.search_engine.model.TranscriptionAudio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -38,4 +39,21 @@ public class MediaContentRepositoryImpl {
         });
     }
 
+    public void updateEmbeddingAudioBatch(List<EmbeddingAudio> embeddingAudios) {
+        String sql = "UPDATE video_data.videos SET embedding_audio = ? WHERE url = ?";
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                EmbeddingAudio transcription = embeddingAudios.get(i);
+                ps.setString(1, transcription.getEmbedding());
+                ps.setString(2, transcription.getUrl());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return embeddingAudios.size();
+            }
+        });
+    }
 }
