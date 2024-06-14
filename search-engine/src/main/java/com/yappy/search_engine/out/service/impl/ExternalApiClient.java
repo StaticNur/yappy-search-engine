@@ -1,30 +1,51 @@
 package com.yappy.search_engine.out.service.impl;
 
 import com.yappy.search_engine.out.model.response.TranscribedAudioResponse;
+import com.yappy.search_engine.out.model.response.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class ExternalApiClient implements ApiClient {
 
     private final RestTemplate restTemplate;
-
-    @Value("${api.service.audio.url.transcription}")
-    private String transcriptionUrl;
+    private final RetryTemplate retryTemplate;
+    private final String transcriptionUrl;
+    private final String visualDescriptionUrl;
 
     @Autowired
-    public ExternalApiClient(RestTemplate restTemplate) {
+    public ExternalApiClient(RestTemplate restTemplate, RetryTemplate retryTemplate,
+                             @Value("${api.service.url.audio.transcription}") String transcriptionUrl,
+                             @Value("${api.service.url.visual.description}") String visualDescriptionUrl) {
         this.restTemplate = restTemplate;
+        this.retryTemplate = retryTemplate;
+        this.transcriptionUrl = transcriptionUrl;
+        this.visualDescriptionUrl = visualDescriptionUrl;
     }
 
     @Override
+    public TranscribedAudioResponse getTranscription(String videoUrl) {
+        String url = buildUrl(transcriptionUrl, "video_url", videoUrl);
+        return retryTemplate.execute(context ->
+                executePostRequest(url, null, TranscribedAudioResponse.class, this::processTranscriptionResponse));
+    }
+
+    @Override
+    public VisualDescription getVisualDescription(String videoUrl) {
+        String url = buildUrl(visualDescriptionUrl, "video_url", videoUrl);
+        return retryTemplate.execute(context ->
+                executePostRequest(url, null, VisualDescription.class, this::processVisualDescriptionResponse));
+    }
+
+    /*@Override
     public TranscribedAudioResponse getTranscription(String videoUrl) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(transcriptionUrl)
                 .queryParam("video_url", videoUrl);
@@ -65,8 +86,79 @@ public class ExternalApiClient implements ApiClient {
     }
 
     @Override
-    public void getEmbeddingFromTranscription(String transcription) {
+    public VisualDescription getVisualDescription(String videoUrl) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(visualDescriptionUrl)
+                .queryParam("video_url", videoUrl);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<VisualDescription> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.POST,
+                requestEntity,
+                VisualDescription.class
+        );
+        VisualDescription visualDescription = new VisualDescription();
+        HttpStatus statusCode = response.getStatusCode();
+
+        if (statusCode == HttpStatus.OK) {
+            VisualDescription responseBody = response.getBody();
+            if (responseBody != null){
+                System.out.println("VisualDescription: " + responseBody.getResult());
+                System.out.println("isSuccess: " + responseBody.isSuccess());
+            }
+        } else {
+            System.out.println("Error: " + statusCode);
+        }
+        return visualDescription;
+    }*/
+
+    @Override
+    public void getEmbeddingFromTranscription(String transcription) {
+        //TODO request Api
     }
 
+    private <T> T executePostRequest(String url, Object body, Class<T> responseType,
+                                     Function<ResponseEntity<T>, T> responseHandler) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
+        HttpStatus statusCode = response.getStatusCode();
+
+        if (statusCode == HttpStatus.OK) {
+            return responseHandler.apply(response);
+        } else {
+            System.out.println("Error: " + statusCode);
+            return null;
+        }
+    }
+
+    private String buildUrl(String baseUrl, String paramName, String paramValue) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam(paramName, paramValue)
+                .toUriString();
+    }
+
+    private TranscribedAudioResponse processTranscriptionResponse(ResponseEntity<TranscribedAudioResponse> response) {
+        TranscribedAudioResponse transcription = response.getBody();
+        if (transcription != null) {
+            System.out.println("Text: " + transcription.getText());
+            System.out.println("Languages: " + transcription.getLanguages());
+        }
+        return transcription;
+    }
+
+    private VisualDescription processVisualDescriptionResponse(ResponseEntity<VisualDescription> response) {
+        VisualDescription visualDescription = response.getBody();
+        if (visualDescription != null) {
+            System.out.println("VisualDescription: " + visualDescription.getResult());
+            System.out.println("isSuccess: " + visualDescription.isSuccess());
+        }
+        return visualDescription;
+    }
 }

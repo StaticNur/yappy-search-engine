@@ -10,7 +10,7 @@ public interface MediaContentService {
 
     List<MediaContent> getAllVideo();
 
-    void saveAll(List<VideoFromExcel> videoFromExcels);
+    void saveAll(List<MediaContent> mediaContents);
 
     void save(MediaContent video);
 

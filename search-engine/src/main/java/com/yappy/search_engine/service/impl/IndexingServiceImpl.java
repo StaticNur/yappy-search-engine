@@ -7,6 +7,7 @@ import com.yappy.search_engine.mapper.MediaContentMapper;
 import com.yappy.search_engine.mapper.VideoMapper;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.out.model.response.TranscribedAudioResponse;
+import com.yappy.search_engine.out.model.response.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.IndexingService;
@@ -27,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class IndexingServiceImpl implements IndexingService {
@@ -200,12 +203,49 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
+    /*private void videoDataEnriched(MediaContent videoForPostgres) {
+        String url = videoForPostgres.getUrl();
+
+        // Создаем асинхронные задачи для каждого API вызова
+        CompletableFuture<TranscribedAudioResponse> transcriptionFuture = CompletableFuture.supplyAsync(
+                () -> apiClient.getTranscription(url));
+        CompletableFuture<VisualDescription> visualDescriptionFuture = CompletableFuture.supplyAsync(
+                () -> apiClient.getVisualDescription(url));
+
+        // Обработка результатов после выполнения задач
+        try {
+            TranscribedAudioResponse transcriptionAudio = transcriptionFuture.get();
+            videoForPostgres.setTranscriptionAudio(transcriptionAudio.getText());
+            videoForPostgres.setLanguageAudio(transcriptionAudio.getLanguages());
+
+            VisualDescription visualDescription = visualDescriptionFuture.get();
+            videoForPostgres.setDescriptionVisual(visualDescription.getResult());
+
+            CompletableFuture<String> embeddingAudioFuture = CompletableFuture.supplyAsync(
+                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
+            CompletableFuture<String> embeddingVisualFuture = CompletableFuture.supplyAsync(
+                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
+            CompletableFuture<String> embeddingUserDescriptionFuture = CompletableFuture.supplyAsync(
+                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
+
+            String empty = "[0.0]";
+            videoForPostgres.setEmbeddingAudio(empty);
+            videoForPostgres.setEmbeddingVisual(empty);
+            videoForPostgres.setEmbeddingUserDescription(empty);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
+
     private void videoDataEnriched(MediaContent videoForPostgres) {
-        TranscribedAudioResponse transcriptionAudio = new TranscribedAudioResponse("Text","Languages");//apiClient.getTranscription(videoForPostgres.getUrl());
+        String url = videoForPostgres.getUrl();
+        TranscribedAudioResponse transcriptionAudio = new TranscribedAudioResponse("Text","Languages");//apiClient.getTranscription(url);
         videoForPostgres.setTranscriptionAudio(transcriptionAudio.getText());
         videoForPostgres.setLanguageAudio(transcriptionAudio.getLanguages());
 
-        videoForPostgres.setDescriptionVisual("");
+        VisualDescription visualDescription = apiClient.getVisualDescription(url);
+        videoForPostgres.setDescriptionVisual(visualDescription.getResult());
+
         String empty = "[0.0]";
         videoForPostgres.setEmbeddingAudio(empty);
         videoForPostgres.setEmbeddingVisual(empty);

@@ -23,17 +23,15 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class MediaContentServiceImpl implements MediaContentService {
-
+    private static final int BATCH_SIZE = 10_000;
     private final MediaContentRepository mediaContentRepository;
     private final MediaContentRepositoryImpl mediaContentRepositoryImpl;
-    private final ExcelDataMapper excelDataMapper;
 
     @Autowired
-    public MediaContentServiceImpl(MediaContentRepository mediaContentRepository, MediaContentRepositoryImpl mediaContentRepositoryImpl,
-                                   ExcelDataMapper excelDataMapper) {
+    public MediaContentServiceImpl(MediaContentRepository mediaContentRepository,
+                                   MediaContentRepositoryImpl mediaContentRepositoryImpl) {
         this.mediaContentRepository = mediaContentRepository;
         this.mediaContentRepositoryImpl = mediaContentRepositoryImpl;
-        this.excelDataMapper = excelDataMapper;
     }
 
     @Override
@@ -43,11 +41,9 @@ public class MediaContentServiceImpl implements MediaContentService {
 
     @Override
     @Transactional
-    public void saveAll(List<VideoFromExcel> videoFromExcels) {
-        List<MediaContent> mediaContents = excelDataMapper.buildMediaContentFromVideo(videoFromExcels);
-        int batchSize = 10000;
-        for (int i = 0; i < mediaContents.size(); i += batchSize) {
-            int endIndex = Math.min(i + batchSize, mediaContents.size());
+    public void saveAll(List<MediaContent> mediaContents) {
+        for (int i = 0; i < mediaContents.size(); i += BATCH_SIZE) {
+            int endIndex = Math.min(i + BATCH_SIZE, mediaContents.size());
             List<MediaContent> batchList = mediaContents.subList(i, endIndex);
             mediaContentRepository.saveAll(batchList);
             mediaContentRepository.flush();
@@ -63,13 +59,12 @@ public class MediaContentServiceImpl implements MediaContentService {
     @Override
     @Transactional
     public void updateAllTranscriptions(List<TranscriptionAudio> transcriptionAudios) {
-        int batchSize = 10000; // Указываете желаемый размер пакета
         int numThreads = Runtime.getRuntime().availableProcessors(); // Используйте количество процессоров
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (int i = 0; i < transcriptionAudios.size(); i += batchSize) {
+        for (int i = 0; i < transcriptionAudios.size(); i += BATCH_SIZE) {
             int startIndex = i;
-            int endIndex = Math.min(i + batchSize, transcriptionAudios.size());
+            int endIndex = Math.min(i + BATCH_SIZE, transcriptionAudios.size());
             List<TranscriptionAudio> batchList = transcriptionAudios.subList(startIndex, endIndex);
 
             executor.submit(() -> {

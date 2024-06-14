@@ -2,6 +2,7 @@ package com.yappy.search_engine.controller;
 
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.SearchByEmbeddingDto;
+import com.yappy.search_engine.dto.VideoSearchResult;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.SearchService;
 import com.yappy.search_engine.service.SuggestionService;
@@ -38,9 +39,9 @@ public class SearchController {
     }
 
     @GetMapping("/search/text/lexicographic")
-    public List<Video> searchVideoLexicographic(@RequestParam String query,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "15") int size) {
+    public VideoSearchResult searchVideoLexicographic(@RequestParam String query,
+                                                            @RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "15") int size) {
         return searchService.searchVideoLexicographic(query.trim(), page, size);
     }
 

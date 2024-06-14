@@ -1,7 +1,8 @@
 package com.yappy.search_engine.controller;
 
 import com.yappy.search_engine.dto.Response;
-import com.yappy.search_engine.service.ImportDataService;
+import com.yappy.search_engine.service.ImportExcelService;
+import com.yappy.search_engine.service.ImportJsonService;
 import com.yappy.search_engine.service.impl.ExcelDataServiceImpl;
 import com.yappy.search_engine.service.impl.JsonDataServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MigrationController {
 
-    private final ImportDataService excelDataService;
-    private final ImportDataService jsonDataService;
+    private final ImportExcelService excelDataService;
+    private final ImportJsonService jsonDataService;
 
     @Autowired
-    public MigrationController(ExcelDataServiceImpl excelDataService, JsonDataServiceImpl jsonDataService) {
+    public MigrationController(ImportExcelService excelDataService, ImportJsonService jsonDataService) {
         this.excelDataService = excelDataService;
         this.jsonDataService = jsonDataService;
     }
@@ -35,7 +36,7 @@ public class MigrationController {
 
     @PostMapping("/import/popularity")
     public ResponseEntity<Response> importTagsFromExcel() {
-        jsonDataService.importData();
+        excelDataService.importDataPopularity();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 }

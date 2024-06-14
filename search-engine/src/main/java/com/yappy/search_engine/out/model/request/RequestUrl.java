@@ -1,9 +1,9 @@
 package com.yappy.search_engine.out.model.request;
 
-public class TranscribedAudioRequest {
+public class RequestUrl {
     private String videoUrl;
 
-    public TranscribedAudioRequest(String videoUrl) {
+    public RequestUrl(String videoUrl) {
         this.videoUrl = videoUrl;
     }
 

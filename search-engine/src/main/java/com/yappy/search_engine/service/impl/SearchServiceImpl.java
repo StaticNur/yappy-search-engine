@@ -2,9 +2,12 @@ package com.yappy.search_engine.service.impl;
 
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.SearchByEmbeddingDto;
+import com.yappy.search_engine.dto.SearchRequestDto;
+import com.yappy.search_engine.dto.VideoSearchResult;
 import com.yappy.search_engine.helper.Indices;
 import com.yappy.search_engine.mapper.SearchHitMapper;
 import com.yappy.search_engine.service.SearchService;
+import com.yappy.search_engine.search.SearchUtil;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -78,7 +81,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<Video> searchVideoLexicographic(String query, int page, int size) {
+    public VideoSearchResult searchVideoLexicographic(String query, int page, int size) {
         SearchRequest searchRequest = new SearchRequest(Indices.VIDEOS_INDEX);
         System.out.println("query:" + query);
         query = normalizeQuery(query);
@@ -87,6 +90,7 @@ public class SearchServiceImpl implements SearchService {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .from(from)
                 .size(size);
+
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
         boolQueryBuilder.should(QueryBuilders
@@ -99,7 +103,7 @@ public class SearchServiceImpl implements SearchService {
         String[] queryParts = query.split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
-            System.out.println("tags:"+part);
+            System.out.println("tags:" + part);
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
                 tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part).boost(2.0f));
@@ -119,7 +123,55 @@ public class SearchServiceImpl implements SearchService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return extractVideosFromResponse(searchResponse);
+
+        long totalHits = searchResponse.getHits().getTotalHits().value;
+        List<Video> videos = extractVideosFromResponse(searchResponse);
+
+        return new VideoSearchResult(videos, totalHits);
+    }
+
+
+    @Override
+    public VideoSearchResult getVideoByDate(final String date) {
+        final SearchRequest request = SearchUtil.buildSearchRequest(
+                Indices.VIDEOS_INDEX,
+                "created",
+                date
+        );
+        return searchInternal(request);
+    }
+
+    @Override
+    public VideoSearchResult search(SearchRequestDto dto, String date) {
+        SearchRequest request;
+        System.out.println(dto.toString());
+        if (dto.getTypeSearch().equals("embedding")) {
+            request = SearchUtil.buildSearchRequest(
+                    Indices.VIDEOS_INDEX,
+                    dto, date
+            );
+        }else {
+            request = SearchUtil.buildSearchRequest(
+                    Indices.VIDEOS_INDEX,
+                    dto, date);
+        }
+        return searchInternal(request);
+    }
+
+    private VideoSearchResult searchInternal(final SearchRequest request) {
+        if (request == null) {
+            return new VideoSearchResult(Collections.emptyList(), 0);
+        }
+        try {
+            final SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+            long totalHits = response.getHits().getTotalHits().value;
+            List<Video> videos = extractVideosFromResponse(response);
+
+            return new VideoSearchResult(videos, totalHits);
+        } catch (Exception e) {
+            return new VideoSearchResult(Collections.emptyList(), 0);
+        }
     }
 
     private List<Video> extractVideosFromResponse(SearchResponse searchResponse) {

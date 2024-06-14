@@ -1,5 +1,5 @@
 package com.yappy.search_engine.service;
 
-public interface ImportDataService {
+public interface ImportJsonService {
     void importData();
 }

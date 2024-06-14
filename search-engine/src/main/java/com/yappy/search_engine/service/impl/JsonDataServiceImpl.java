@@ -1,7 +1,7 @@
 package com.yappy.search_engine.service.impl;
 
 import com.yappy.search_engine.model.TranscriptionAudio;
-import com.yappy.search_engine.service.ImportDataService;
+import com.yappy.search_engine.service.ImportJsonService;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.util.parser.JsonParser;
 import com.yappy.search_engine.util.parser.ReaderArchiveFile;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @Service
-public class JsonDataServiceImpl implements ImportDataService {
+public class JsonDataServiceImpl implements ImportJsonService {
     public static final String PATH_ZIP_FILE = "concatenated_trancriptions_by_url.json.zip";
     public static final String FILE_NAME = "concatenated_trancriptions_by_url.json";
     public final JsonParser jsonParser;
