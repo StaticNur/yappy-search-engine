@@ -34,15 +34,21 @@ public class MigrationController {
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 
+    @PostMapping("/import/transcription-audio-high-quality")
+    public ResponseEntity<Response> importAudioHighQualityFromExcel() {
+        jsonDataService.importDataHighQuality();
+        return ResponseEntity.ok().body(new Response("Data imported successfully!"));
+    }
+
     @PostMapping("/import/transcription-embedding")
-    public ResponseEntity<Response> importTagsFromExcel() {
+    public ResponseEntity<Response> importAudioFromExcel() {
         excelDataService.importDataEmbedding();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 
-    @PostMapping("/create/embedding-from-description")
+    /*@PostMapping("/create/embedding-from-description")
     public ResponseEntity<Response> createEmbeddingFromExcel() {
         excelDataService.createEmbeddingDataEmbedding();
         return ResponseEntity.ok().body(new Response("Data created successfully!"));
-    }
+    }*/
 }

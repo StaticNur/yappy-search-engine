@@ -72,7 +72,7 @@ public class ExcelDataServiceImpl implements ImportExcelService {
                     mediaContentService.updateAllTranscriptionsEmbedding(embeddingAudios);
                 }
             } else {
-                throw new FileNotFoundException("Файл не найден: " + PATH_FILE_WITH_VIDEO);
+                throw new FileNotFoundException("Файл не найден: " + PATH_FILE_WITH_AUDIO_EMBEDDING);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -83,7 +83,7 @@ public class ExcelDataServiceImpl implements ImportExcelService {
     public void createEmbeddingDataEmbedding() {
         List<VideoFromExcel> videoFromExcels;
         try {
-            Resource resource = new ClassPathResource(PATH_FILE_WITH_AUDIO_EMBEDDING);
+            Resource resource = new ClassPathResource(PATH_FILE_WITH_VIDEO);
             if (resource.exists()) {
                 try(InputStream inputStream = resource.getInputStream()) {
                     videoFromExcels = excelParser.parseMainExcelFile(inputStream);
