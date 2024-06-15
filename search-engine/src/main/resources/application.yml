@@ -15,7 +15,6 @@ api:
     url:
       audio:
         transcription: http://192.144.12.231:8001/transcription
-        embedding:
       visual:
         description: http://192.144.12.231:8002/ocr
-        embedding:
+      embedding: http://192.144.12.231:8003/text_embeddings

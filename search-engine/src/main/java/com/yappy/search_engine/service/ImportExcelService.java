@@ -4,4 +4,5 @@ public interface ImportExcelService {
     void importData();
 
     void importDataEmbedding();
+    void createEmbeddingDataEmbedding();
 }

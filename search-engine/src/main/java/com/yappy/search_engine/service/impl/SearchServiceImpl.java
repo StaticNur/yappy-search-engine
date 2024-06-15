@@ -6,6 +6,7 @@ import com.yappy.search_engine.dto.SearchRequestDto;
 import com.yappy.search_engine.dto.VideoSearchResult;
 import com.yappy.search_engine.helper.Indices;
 import com.yappy.search_engine.mapper.SearchHitMapper;
+import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.SearchService;
 import com.yappy.search_engine.search.SearchUtil;
 import org.elasticsearch.action.search.SearchRequest;
@@ -14,15 +15,11 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.functionscore.ScriptScoreQueryBuilder;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,54 +27,82 @@ import java.util.*;
 
 @Service
 public class SearchServiceImpl implements SearchService {
-    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
     private final RestHighLevelClient client;
     private final SearchHitMapper searchHitMapper;
+    private final ApiClient apiClient;
 
     @Autowired
-    public SearchServiceImpl(ElasticsearchRestTemplate elasticsearchRestTemplate,
-                             RestHighLevelClient client, SearchHitMapper searchHitMapper) {
-        this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+    public SearchServiceImpl(RestHighLevelClient client, SearchHitMapper searchHitMapper,
+                             ApiClient apiClient) {
         this.client = client;
         this.searchHitMapper = searchHitMapper;
+        this.apiClient = apiClient;
     }
 
     @Override
-    public SearchHits<Video> searchVideosByEmbedding(SearchByEmbeddingDto embedding, int page, int size) {
-        var script = """
-                    if (doc['embedding'].size() == 0) {
-                        return 0.0;
-                    } else {
-                        def score = cosineSimilarity(params.queryVector, 'embedding') + 1.0;
-                        if (Double.isNaN(score) || score < 0) {
-                            return 0.0;
-                        } else {
-                            return score;
-                        }
-                    }
-                """;
-        var params = Collections.singletonMap("queryVector", (Object) embedding.getEmbedding());
-        var scriptType = ScriptType.INLINE;
-        var language = "painless";
+    public VideoSearchResult searchVideosByEmbedding(SearchByEmbeddingDto embedding, int page, int size) {
+        SearchRequest searchRequest = new SearchRequest(Indices.VIDEOS_INDEX);
 
-        var searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.scriptScoreQuery(QueryBuilders.matchAllQuery(),
-                        new Script(scriptType, language, script, params)))
-                .withPageable(PageRequest.of(page, size))
-                .build();
+        double[] embeddingQuery = apiClient.getEmbedding(embedding.getQuery());
+        System.out.println("Query text:"+embedding.toString());
+        System.out.println("Query embedding: ["+embeddingQuery[0]+"...] length="+embeddingQuery.length);
 
-        return elasticsearchRestTemplate.search(searchQuery, Video.class);
-    }
+        ScriptType scriptType = ScriptType.INLINE;
+        String language = "painless";
+        Map<String, Object> params = Collections.singletonMap("queryVector", (Object) embeddingQuery);
+        final int from = page <= 0 ? 0 : page * size;
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+                .from(from)
+                .size(size);
 
-    @Override
-    public List<SearchHit<Video>> searchVideosByText(String query, int page, int size) {
-        var searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery(query,
-                        "title", "descriptionUser", "tags"))
-                .withPageable(PageRequest.of(page, size))
-                .build();
+        ScriptScoreQueryBuilder scriptScoreQueryBuilderAudio
+                = getScriptBuilderAudio(scriptType, language, params, embedding.getBoostEmbeddingAudio());
 
-        return elasticsearchRestTemplate.search(searchQuery, Video.class).getSearchHits();
+        ScriptScoreQueryBuilder scriptScoreQueryBuilderVisual
+                = getScriptBuilderVisual(scriptType, language, params, embedding.getBoostDescriptionVisual());
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("descriptionUser", embedding.getQuery())
+                .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceDescriptionUser()))
+                .prefixLength(embedding.getMinimumPrefixLengthDescriptionUser())
+                .maxExpansions(embedding.getMaximumNumberOfMatchOptionsDescriptionUser())
+                .boost(embedding.getBoostDescriptionUser()));
+
+        String[] queryParts = embedding.getQuery().split(" ");
+        BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
+        for (String part : queryParts) {
+            if (part.startsWith("#")) {
+                part = part.replace("#", "");
+                tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part)
+                        .boost(embedding.getBoostTags()));
+            } else {
+                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
+                        .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceTag()))  // Установка коэффициента совпадения в 2
+                        .prefixLength(embedding.getMaximumNumberOfMatchOptionsTag())                    // 1 Минимальная длина префикса, которая должна быть неизменной
+                        .maxExpansions(embedding.getMaximumNumberOfMatchOptionsTag()));                // 10 Максимальное количество вариантов совпадения
+            }
+        }
+
+        BoolQueryBuilder combinedQueryBuilder = QueryBuilders.boolQuery()
+                .should(scriptScoreQueryBuilderAudio)
+                .should(scriptScoreQueryBuilderVisual)
+                .should(boolQueryBuilder)
+                .should(tagsQueryBuilder);
+
+
+        searchSourceBuilder.query(combinedQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse;
+        try {
+            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        long totalHits = searchResponse.getHits().getTotalHits().value;
+        List<Video> videos = extractVideosFromResponse(searchResponse);
+
+        return new VideoSearchResult(videos, totalHits);
     }
 
     @Override
@@ -106,7 +131,8 @@ public class SearchServiceImpl implements SearchService {
             System.out.println("tags:" + part);
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
-                tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part).boost(2.0f));
+                tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part)
+                        .boost(2.0f));
             } else {
                 tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part).fuzziness(Fuzziness.AUTO));
             }
@@ -141,10 +167,21 @@ public class SearchServiceImpl implements SearchService {
         SearchRequest request;
         System.out.println(dto.toString());
         if (dto.getTypeSearch().equals("embedding")) {
-            request = SearchUtil.buildSearchRequest(
-                    Indices.VIDEOS_INDEX,
-                    dto, date
-            );
+            SearchByEmbeddingDto searchByEmbeddingDto = new SearchByEmbeddingDto(dto.getQuery(),
+                    2,
+                    2,
+                    50,
+                    2,
+                    3,
+                    5,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1);
+            return searchVideosByEmbedding(searchByEmbeddingDto, dto.getPage(), dto.getSize());
         }else {
             request = SearchUtil.buildSearchRequest(
                     Indices.VIDEOS_INDEX,
@@ -177,6 +214,48 @@ public class SearchServiceImpl implements SearchService {
         }
         return videos;
     }
+
+    private ScriptScoreQueryBuilder getScriptBuilderAudio(ScriptType scriptType, String language,
+                                                          Map<String, Object> params, float boost){
+        var script = """
+                    if (doc['embedding_audio'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embedding_audio') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
+        return QueryBuilders.scriptScoreQuery(
+                QueryBuilders.matchAllQuery(),
+                new Script(scriptType, language, script, params)
+        ).boost(boost);
+    }
+
+    private ScriptScoreQueryBuilder getScriptBuilderVisual(ScriptType scriptType, String language,
+                                                          Map<String, Object> params, float boost){
+        var script = """
+                    if (doc['embedding_visual'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embedding_visual') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
+        return QueryBuilders.scriptScoreQuery(
+                QueryBuilders.matchAllQuery(),
+                new Script(scriptType, language, script, params)
+        ).boost(boost);
+    }
+
+
 
     //TODO какие знаки можно не убирать?
     private String normalizeQuery(String query) {

@@ -39,4 +39,10 @@ public class MigrationController {
         excelDataService.importDataEmbedding();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
+
+    @PostMapping("/create/embedding-from-description")
+    public ResponseEntity<Response> createEmbeddingFromExcel() {
+        excelDataService.createEmbeddingDataEmbedding();
+        return ResponseEntity.ok().body(new Response("Data created successfully!"));
+    }
 }

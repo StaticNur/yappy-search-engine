@@ -1,16 +1,20 @@
 package com.yappy.search_engine.out.service.impl;
 
+import com.yappy.search_engine.out.model.response.EmbeddingFromText;
 import com.yappy.search_engine.out.model.response.TranscribedAudioResponse;
 import com.yappy.search_engine.out.model.response.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -21,15 +25,18 @@ public class ExternalApiClient implements ApiClient {
     private final RetryTemplate retryTemplate;
     private final String transcriptionUrl;
     private final String visualDescriptionUrl;
+    private final String embeddingUrl;
 
     @Autowired
     public ExternalApiClient(RestTemplate restTemplate, RetryTemplate retryTemplate,
                              @Value("${api.service.url.audio.transcription}") String transcriptionUrl,
-                             @Value("${api.service.url.visual.description}") String visualDescriptionUrl) {
+                             @Value("${api.service.url.visual.description}") String visualDescriptionUrl,
+                             @Value("${api.service.url.embedding}") String embeddingUrl) {
         this.restTemplate = restTemplate;
         this.retryTemplate = retryTemplate;
         this.transcriptionUrl = transcriptionUrl;
         this.visualDescriptionUrl = visualDescriptionUrl;
+        this.embeddingUrl = embeddingUrl;
     }
 
     @Override
@@ -40,7 +47,7 @@ public class ExternalApiClient implements ApiClient {
                         null,
                         TranscribedAudioResponse.class,
                         this::processTranscriptionResponse));*/
-        return retryTemplate.execute(context ->{
+        return retryTemplate.execute(context -> {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -85,6 +92,26 @@ public class ExternalApiClient implements ApiClient {
                         null,
                         VisualDescription.class,
                         this::processVisualDescriptionResponse));
+    }
+
+    public double[] getEmbedding(String text) {
+        String url = buildUrl(embeddingUrl, "text", text);
+        return retryTemplate.execute(context -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
+
+            ResponseEntity<EmbeddingFromText> response = restTemplate.exchange(url,
+                    HttpMethod.POST, requestEntity, EmbeddingFromText.class);
+            HttpStatus statusCode = response.getStatusCode();
+
+            if (statusCode == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody().getResult();
+            } else {
+                System.out.println("Error: " + statusCode);
+                return null;
+            }
+        });
     }
 
     /*@Override
@@ -157,12 +184,6 @@ public class ExternalApiClient implements ApiClient {
         }
         return visualDescription;
     }*/
-
-    @Override
-    public void getEmbeddingFromTranscription(String transcription) {
-        //TODO request Api
-    }
-
     private <T> T executePostRequest(String url, Object body, Class<T> responseType,
                                      Function<ResponseEntity<T>, T> responseHandler) {
         HttpHeaders headers = new HttpHeaders();

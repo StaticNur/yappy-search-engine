@@ -33,7 +33,7 @@ public class JsonDataServiceImpl implements ImportJsonService {
         long begin = System.currentTimeMillis();
         try (InputStream inputStream = readerArchiveFile.readArchiveFile(PATH_ZIP_FILE, FILE_NAME)) {
             List<TranscriptionAudio> transcriptionAudios = jsonParser.parseJson(inputStream);
-            System.out.println("Ready parseJson transcriptionAudios: "+(System.currentTimeMillis()-begin));
+            System.out.println("Ready parseJson transcriptionAudios: "+(System.currentTimeMillis()-begin)+"ms");
             mediaContentService.updateAllTranscriptions(transcriptionAudios);
         } catch (IOException e) {
             System.err.println("Ошибка при обработке файла: " + e.getMessage());

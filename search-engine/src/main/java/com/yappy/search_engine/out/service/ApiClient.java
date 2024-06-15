@@ -9,6 +9,6 @@ public interface ApiClient {
 
     VisualDescription getVisualDescription(String videoUrl);
 
-    void getEmbeddingFromTranscription(String transcription);
+    double[] getEmbedding(String text);
 
 }

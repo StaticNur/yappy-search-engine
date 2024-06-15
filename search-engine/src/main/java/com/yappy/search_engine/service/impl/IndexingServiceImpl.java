@@ -6,6 +6,7 @@ import com.yappy.search_engine.dto.VideoDto;
 import com.yappy.search_engine.mapper.MediaContentMapper;
 import com.yappy.search_engine.mapper.VideoMapper;
 import com.yappy.search_engine.model.MediaContent;
+import com.yappy.search_engine.out.model.response.EmbeddingFromText;
 import com.yappy.search_engine.out.model.response.TranscribedAudioResponse;
 import com.yappy.search_engine.out.model.response.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
@@ -37,7 +38,8 @@ public class IndexingServiceImpl implements IndexingService {
     private final static String INDEX_VIDEO_NAME = "videos";
     private final static String INDEX_AUTOCOMPLETE_NAME = "suggestions";
     private final static String FIELD_AUTOCOMPLETE = "suggestion";
-    private final static int EMBEDDING_LENGTH = 768;
+    private static final String EMPTY_VECTOR;
+    private final static int EMBEDDING_LENGTH = 640;
 
     private final RestHighLevelClient client;
     private final ObjectMapper objectMapper;
@@ -86,7 +88,7 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Override
     public void indexAllVideoFromDb() {
-        long batchSize = 10_000;
+        long batchSize = 5_000;
         long fromIndex = 0;
         long toIndex;
 
@@ -239,16 +241,38 @@ public class IndexingServiceImpl implements IndexingService {
 
     private void videoDataEnriched(MediaContent videoForPostgres) {
         String url = videoForPostgres.getUrl();
-        TranscribedAudioResponse transcriptionAudio = apiClient.getTranscription(url);//new TranscribedAudioResponse("Text","Languages");
+        TranscribedAudioResponse transcriptionAudio = apiClient.getTranscription(url);
         videoForPostgres.setTranscriptionAudio(transcriptionAudio.getText());
         videoForPostgres.setLanguageAudio(transcriptionAudio.getLanguages());
 
         VisualDescription visualDescription = apiClient.getVisualDescription(url);
         videoForPostgres.setDescriptionVisual(visualDescription.getResult());
 
-        String empty = "[0.0]";
-        videoForPostgres.setEmbeddingAudio(empty);
-        videoForPostgres.setEmbeddingVisual(empty);
-        videoForPostgres.setEmbeddingUserDescription(empty);
+
+        double[] embeddingAudio = apiClient.getEmbedding(transcriptionAudio.getText());
+        videoForPostgres.setEmbeddingAudio(Arrays.toString(embeddingAudio));
+
+        double[] embeddingVisual = apiClient.getEmbedding(visualDescription.getResult());
+        videoForPostgres.setEmbeddingVisual(Arrays.toString(embeddingVisual));
+
+
+        String userAllDescription = videoForPostgres.getTitle()
+                                    + " " + videoForPostgres.getDescriptionUser()
+                                    + " " + videoForPostgres.getTags();
+        double[] embeddingUserDescription = apiClient.getEmbedding(userAllDescription.trim());
+        videoForPostgres.setEmbeddingUserDescription(Arrays.toString(embeddingUserDescription));
+    }
+
+    static {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < EMBEDDING_LENGTH; i++) {
+            sb.append("0.0");
+            if (i < EMBEDDING_LENGTH - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        EMPTY_VECTOR = sb.toString();
     }
 }

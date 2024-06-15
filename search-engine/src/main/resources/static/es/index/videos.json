@@ -17,15 +17,15 @@
       "hash": { "type": "text"},
       "embedding_audio": {
         "type": "dense_vector",
-        "dims": 768
+        "dims": 640
       },
       "embedding_visual": {
         "type": "dense_vector",
-        "dims": 768
+        "dims": 640
       },
       "embedding_user_description": {
         "type": "dense_vector",
-        "dims": 768
+        "dims": 640
       }
     }
   }

@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class VideoMapper {
+    private static final double[] EMPTY_VECTOR;
+    private final static int EMBEDDING_LENGTH = 640;
 
     public Video buildVideoFromMediaContent(MediaContent mediaContent)  {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -16,6 +18,11 @@ public class VideoMapper {
         if (popularity == null) {
             popularity = 0;
         }
+        double[] embeddingAudio = convertToFloatArray(mediaContent.getEmbeddingAudio());
+        if(embeddingAudio.length < 10){
+            embeddingAudio = EMPTY_VECTOR;
+        }
+
         return new Video(
                 mediaContent.getUuid().toString(),
                 mediaContent.getUrl(),
@@ -28,9 +35,9 @@ public class VideoMapper {
                 formattedDate,
                 popularity.toString(),
                 mediaContent.getHash(),
-                convertToFloatArray(mediaContent.getEmbeddingAudio()),
-                convertToFloatArray(mediaContent.getEmbeddingVisual()),
-                convertToFloatArray(mediaContent.getEmbeddingUserDescription())
+                embeddingAudio,
+                EMPTY_VECTOR,
+                EMPTY_VECTOR
         );
     }
 
@@ -42,5 +49,18 @@ public class VideoMapper {
             result[i] = Double.parseDouble(parts[i].trim());
         }
         return result;
+    }
+
+    static {
+        /*StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < EMBEDDING_LENGTH; i++) {
+            sb.append("0.0");
+            if (i < EMBEDDING_LENGTH - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");*/
+        EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();
     }
 }

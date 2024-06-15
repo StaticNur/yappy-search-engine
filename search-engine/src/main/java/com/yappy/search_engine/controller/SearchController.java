@@ -43,13 +43,6 @@ public class SearchController {
         return searchService.searchWithFilter(dto, formattedDate);
     }
 
-    @GetMapping("/search/text")
-    public List<SearchHit<Video>> searchByText(@RequestParam String query,
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "15") int size) {
-        return searchService.searchVideosByText(query, page, size);
-    }
-
     @GetMapping("/search/text/lexicographic")
     public VideoSearchResult searchVideoLexicographic(@RequestParam String query,
                                                       @RequestParam(defaultValue = "0") int page,
@@ -57,8 +50,8 @@ public class SearchController {
         return searchService.searchVideoLexicographic(query.trim(), page, size);
     }
 
-    @GetMapping("/search/embedding")
-    public SearchHits<Video> searchByEmbedding(@RequestParam(defaultValue = "0") int page,
+    @PostMapping("/search/embedding")
+    public VideoSearchResult searchByEmbedding(@RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "15") int size,
                                                @RequestBody SearchByEmbeddingDto embedding) {
         return searchService.searchVideosByEmbedding(embedding, page, size);

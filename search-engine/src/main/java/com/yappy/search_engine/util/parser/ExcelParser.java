@@ -2,13 +2,21 @@ package com.yappy.search_engine.util.parser;
 
 import com.yappy.search_engine.model.EmbeddingAudio;
 import com.yappy.search_engine.model.VideoFromExcel;
+import com.yappy.search_engine.out.model.response.EmbeddingFromText;
+import com.yappy.search_engine.out.service.impl.ExternalApiClient;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.*;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,6 +25,26 @@ import java.util.List;
 
 @Component
 public class ExcelParser {
+
+    /*public static void main(String[] args) {
+        List<EmbeddingAudio> embeddingAudios;
+        try {
+            Resource resource = new ClassPathResource("Mclip_transcription_embedding_3000-4000_2.xlsx");
+            if (resource.exists()) {
+                try(InputStream inputStream = resource.getInputStream()) {
+                    ExcelParser excelParser = new ExcelParser();
+                    embeddingAudios = excelParser.parseEmbeddingExcelFile(inputStream);
+                    for (int i=0;i<10;i++){
+                        System.out.println(embeddingAudios.get(i));
+                    }
+                }
+            } else {
+                throw new FileNotFoundException("Файл не найден: ");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
 
     public List<VideoFromExcel> parseMainExcelFile(InputStream inputStream) throws IOException {
         List<VideoFromExcel> videoEntries = new ArrayList<>();
@@ -45,27 +73,10 @@ public class ExcelParser {
         return videoEntries;
     }
 
-    public static void main(String[] args) {
-        List<EmbeddingAudio> embeddingAudios;
-        try {
-            Resource resource = new ClassPathResource("Mclip_transcription_embedding_2000.xlsx");
-            if (resource.exists()) {
-                try(InputStream inputStream = resource.getInputStream()) {
-                    ExcelParser excelParser = new ExcelParser();
-                    embeddingAudios = excelParser.parseEmbeddingExcelFile(inputStream);
-                    for (int i=0;i<10;i++){
-                        System.out.println(embeddingAudios.get(i));
-                    }
-                }
-            } else {
-                throw new FileNotFoundException("Файл не найден: ");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
     public List<EmbeddingAudio> parseEmbeddingExcelFile(InputStream inputStream) throws IOException {
         List<EmbeddingAudio> videoEntries = new ArrayList<>();
+
+        IOUtils.setByteArrayMaxOverride(120000000);
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
 

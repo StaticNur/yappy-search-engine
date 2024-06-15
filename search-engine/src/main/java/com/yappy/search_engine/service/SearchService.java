@@ -11,8 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface SearchService {
-    SearchHits<Video> searchVideosByEmbedding(SearchByEmbeddingDto embedding, int page, int size);
-    List<SearchHit<Video>> searchVideosByText(String query, int page, int size);
+    VideoSearchResult searchVideosByEmbedding(SearchByEmbeddingDto embedding, int page, int size);
     VideoSearchResult searchVideoLexicographic(String query, int page, int size);
 
     VideoSearchResult getRecommendations();

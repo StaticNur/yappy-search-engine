@@ -11,6 +11,7 @@ services:
     container_name: odfe-node
     environment:
       - discovery.type=single-node
+      - http.max_content_length=500mb
     volumes:
       - ./elasticsearch_data:/usr/share/elasticsearch/data
     ports:
