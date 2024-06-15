@@ -1,0 +1,32 @@
+{
+  "mappings": {
+    "properties": {
+      "uuid": { "type": "keyword" },
+      "url": { "type": "keyword" },
+      "title": { "type": "text" },
+      "description_user": { "type": "text" },
+      "transcription_audio": { "type": "text" },
+      "language_audio": { "type": "text" },
+      "description_visual": { "type": "text" },
+      "tags": { "type": "text" },
+      "created": {
+        "type": "date",
+        "format": "yyyy-MM-dd'T'HH:mm:ss.SSS"
+      },
+      "popularity": { "type": "integer"},
+      "hash": { "type": "text"},
+      "embedding_audio": {
+        "type": "dense_vector",
+        "dims": 768
+      },
+      "embedding_visual": {
+        "type": "dense_vector",
+        "dims": 768
+      },
+      "embedding_user_description": {
+        "type": "dense_vector",
+        "dims": 768
+      }
+    }
+  }
+}

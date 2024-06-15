@@ -1,0 +1,21 @@
+spring:
+  port: 8080
+  datasource:
+    url: jdbc:postgresql://postgres_db:5432/media-content-db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
+    change-log: db.changelog/changelog.xml
+    liquibase-schema: migration
+api:
+  service:
+    url:
+      audio:
+        transcription: http://192.144.12.231:8001/transcription
+        embedding:
+      visual:
+        description: http://192.144.12.231:8002/ocr
+        embedding:

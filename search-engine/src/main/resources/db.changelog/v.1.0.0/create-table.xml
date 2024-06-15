@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+        logicalFilePath="db/changelog.xml">
+
+    <!--   Таблица для видео   -->
+    <changeSet id="create-videos-table" author="Mukhammadnur">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="video_data" tableName="videos"/>
+                <sequenceExists schemaName="video_data" sequenceName="videos_sequence"/>
+            </not>
+        </preConditions>
+        <createSequence schemaName="video_data" sequenceName="videos_sequence" startValue="1" incrementBy="1"/>
+
+        <createTable schemaName="video_data" tableName="videos">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('video_data.videos_sequence')">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="uuid" type="UUID">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="url" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="description_user" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="transcription_audio" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="language_audio" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="description_visual" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="tags" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="popularity" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="hash" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="embedding_audio" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="embedding_visual" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="embedding_user_description" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="indexing_time" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable schemaName="video_data" tableName="videos" />
+            <dropSequence schemaName="video_data" sequenceName="videos_sequence"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

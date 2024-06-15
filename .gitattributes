@@ -1,1 +1,2 @@
 search-engine/src/main/resources/concatenated_trancriptions_by_url.json.zip filter=lfs diff=lfs merge=lfs -text
+search-engine/src/main/resourcesgit[[:space:]]lfs[[:space:]]track[[:space:]]search-engine/src/main/resources filter=lfs diff=lfs merge=lfs -text
