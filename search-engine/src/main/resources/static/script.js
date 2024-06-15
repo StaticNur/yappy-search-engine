@@ -6,7 +6,7 @@ let mySavedVideosCurrentIndex = 0;
 
 var isMyVideo = false;
 
-const host = "localhost";//192.144.12.231
+const host = "192.144.12.231";//localhost
 
 document.addEventListener('DOMContentLoaded', function () {
     const startTime = performance.now();
