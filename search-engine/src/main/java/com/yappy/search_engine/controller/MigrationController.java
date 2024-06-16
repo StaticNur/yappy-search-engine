@@ -3,8 +3,6 @@ package com.yappy.search_engine.controller;
 import com.yappy.search_engine.dto.Response;
 import com.yappy.search_engine.service.ImportExcelService;
 import com.yappy.search_engine.service.ImportJsonService;
-import com.yappy.search_engine.service.impl.ExcelDataServiceImpl;
-import com.yappy.search_engine.service.impl.JsonDataServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +40,19 @@ public class MigrationController {
 
     @PostMapping("/import/transcription-embedding")
     public ResponseEntity<Response> importAudioFromExcel() {
-        excelDataService.importDataEmbedding();
+        excelDataService.importAudioEmbedding();
+        return ResponseEntity.ok().body(new Response("Data imported successfully!"));
+    }
+
+    @PostMapping("/import/video-embedding")
+    public ResponseEntity<Response> importVideoFromExcel() {
+        excelDataService.importVideoEmbedding();
+        return ResponseEntity.ok().body(new Response("Data imported successfully!"));
+    }
+
+    @PostMapping("/import/user-description-embedding")
+    public ResponseEntity<Response> importUserDescriptionFromExcel() {
+        excelDataService.importUserDescriptionEmbedding();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 

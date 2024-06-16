@@ -1,14 +1,14 @@
 package com.yappy.search_engine.model;
 
-public class EmbeddingAudio {
+public class Embedding {
     private String url;
     private String transcription;
     private String embedding;
 
-    public EmbeddingAudio() {
+    public Embedding() {
     }
 
-    public EmbeddingAudio(String url, String transcription, String embedding) {
+    public Embedding(String url, String transcription, String embedding) {
         this.url = url;
         this.transcription = transcription;
         this.embedding = embedding;
@@ -40,7 +40,7 @@ public class EmbeddingAudio {
 
     @Override
     public String toString() {
-        return "EmbeddingAudio{" +
+        return "Embedding{" +
                "url='" + url + '\'' +
                ", transcription='" + transcription + '\'' +
                ", embedding='" + embedding + '\'' +

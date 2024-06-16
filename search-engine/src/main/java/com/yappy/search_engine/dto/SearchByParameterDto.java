@@ -1,10 +1,18 @@
 package com.yappy.search_engine.dto;
 
-public class SearchByEmbeddingDto {
+public class SearchByParameterDto {
     private String query;
     private int coefficientOfCoincidenceDescriptionUser;
     private int minimumPrefixLengthDescriptionUser;
     private int maximumNumberOfMatchOptionsDescriptionUser;
+
+    private int coefficientOfCoincidenceAudio;
+    private int minimumPrefixLengthAudio;
+    private int maximumNumberOfMatchOptionsAudio;
+
+    private int coefficientOfCoincidenceVisual;
+    private int minimumPrefixLengthVisual;
+    private int maximumNumberOfMatchOptionsVisual;
 
     private int coefficientOfCoincidenceTag;
     private int minimumPrefixLengthTag;
@@ -18,15 +26,19 @@ public class SearchByEmbeddingDto {
     private float boostEmbeddingVisual;
     private float boostEmbeddingUserDescription;
 
-    public SearchByEmbeddingDto() {}
+    public SearchByParameterDto() {}
 
-    public SearchByEmbeddingDto(String query, int coefficientOfCoincidenceDescriptionUser,
-                                int minimumPrefixLengthDescriptionUser, int maximumNumberOfMatchOptionsDescriptionUser,
-                                int coefficientOfCoincidenceTag, int minimumPrefixLengthTag, int maximumNumberOfMatchOptionsTag, float boostDescriptionUser, float boostTranscriptionAudio, float boostDescriptionVisual, float boostTags, float boostEmbeddingAudio, float boostEmbeddingVisual, float boostEmbeddingUserDescription) {
+    public SearchByParameterDto(String query, int coefficientOfCoincidenceDescriptionUser, int minimumPrefixLengthDescriptionUser, int maximumNumberOfMatchOptionsDescriptionUser, int coefficientOfCoincidenceAudio, int minimumPrefixLengthAudio, int maximumNumberOfMatchOptionsAudio, int coefficientOfCoincidenceVisual, int minimumPrefixLengthVisual, int maximumNumberOfMatchOptionsVisual, int coefficientOfCoincidenceTag, int minimumPrefixLengthTag, int maximumNumberOfMatchOptionsTag, float boostDescriptionUser, float boostTranscriptionAudio, float boostDescriptionVisual, float boostTags, float boostEmbeddingAudio, float boostEmbeddingVisual, float boostEmbeddingUserDescription) {
         this.query = query;
         this.coefficientOfCoincidenceDescriptionUser = coefficientOfCoincidenceDescriptionUser;
         this.minimumPrefixLengthDescriptionUser = minimumPrefixLengthDescriptionUser;
         this.maximumNumberOfMatchOptionsDescriptionUser = maximumNumberOfMatchOptionsDescriptionUser;
+        this.coefficientOfCoincidenceAudio = coefficientOfCoincidenceAudio;
+        this.minimumPrefixLengthAudio = minimumPrefixLengthAudio;
+        this.maximumNumberOfMatchOptionsAudio = maximumNumberOfMatchOptionsAudio;
+        this.coefficientOfCoincidenceVisual = coefficientOfCoincidenceVisual;
+        this.minimumPrefixLengthVisual = minimumPrefixLengthVisual;
+        this.maximumNumberOfMatchOptionsVisual = maximumNumberOfMatchOptionsVisual;
         this.coefficientOfCoincidenceTag = coefficientOfCoincidenceTag;
         this.minimumPrefixLengthTag = minimumPrefixLengthTag;
         this.maximumNumberOfMatchOptionsTag = maximumNumberOfMatchOptionsTag;
@@ -69,6 +81,54 @@ public class SearchByEmbeddingDto {
 
     public void setMaximumNumberOfMatchOptionsDescriptionUser(int maximumNumberOfMatchOptionsDescriptionUser) {
         this.maximumNumberOfMatchOptionsDescriptionUser = maximumNumberOfMatchOptionsDescriptionUser;
+    }
+
+    public int getCoefficientOfCoincidenceAudio() {
+        return coefficientOfCoincidenceAudio;
+    }
+
+    public void setCoefficientOfCoincidenceAudio(int coefficientOfCoincidenceAudio) {
+        this.coefficientOfCoincidenceAudio = coefficientOfCoincidenceAudio;
+    }
+
+    public int getMinimumPrefixLengthAudio() {
+        return minimumPrefixLengthAudio;
+    }
+
+    public void setMinimumPrefixLengthAudio(int minimumPrefixLengthAudio) {
+        this.minimumPrefixLengthAudio = minimumPrefixLengthAudio;
+    }
+
+    public int getMaximumNumberOfMatchOptionsAudio() {
+        return maximumNumberOfMatchOptionsAudio;
+    }
+
+    public void setMaximumNumberOfMatchOptionsAudio(int maximumNumberOfMatchOptionsAudio) {
+        this.maximumNumberOfMatchOptionsAudio = maximumNumberOfMatchOptionsAudio;
+    }
+
+    public int getCoefficientOfCoincidenceVisual() {
+        return coefficientOfCoincidenceVisual;
+    }
+
+    public void setCoefficientOfCoincidenceVisual(int coefficientOfCoincidenceVisual) {
+        this.coefficientOfCoincidenceVisual = coefficientOfCoincidenceVisual;
+    }
+
+    public int getMinimumPrefixLengthVisual() {
+        return minimumPrefixLengthVisual;
+    }
+
+    public void setMinimumPrefixLengthVisual(int minimumPrefixLengthVisual) {
+        this.minimumPrefixLengthVisual = minimumPrefixLengthVisual;
+    }
+
+    public int getMaximumNumberOfMatchOptionsVisual() {
+        return maximumNumberOfMatchOptionsVisual;
+    }
+
+    public void setMaximumNumberOfMatchOptionsVisual(int maximumNumberOfMatchOptionsVisual) {
+        this.maximumNumberOfMatchOptionsVisual = maximumNumberOfMatchOptionsVisual;
     }
 
     public int getCoefficientOfCoincidenceTag() {
@@ -153,11 +213,17 @@ public class SearchByEmbeddingDto {
 
     @Override
     public String toString() {
-        return "SearchByEmbeddingDto{" +
+        return "SearchByParameterDto{" +
                "query='" + query + '\'' +
                ", coefficientOfCoincidenceDescriptionUser=" + coefficientOfCoincidenceDescriptionUser +
                ", minimumPrefixLengthDescriptionUser=" + minimumPrefixLengthDescriptionUser +
                ", maximumNumberOfMatchOptionsDescriptionUser=" + maximumNumberOfMatchOptionsDescriptionUser +
+               ", coefficientOfCoincidenceAudio=" + coefficientOfCoincidenceAudio +
+               ", minimumPrefixLengthAudio=" + minimumPrefixLengthAudio +
+               ", maximumNumberOfMatchOptionsAudio=" + maximumNumberOfMatchOptionsAudio +
+               ", coefficientOfCoincidenceVisual=" + coefficientOfCoincidenceVisual +
+               ", minimumPrefixLengthVisual=" + minimumPrefixLengthVisual +
+               ", maximumNumberOfMatchOptionsVisual=" + maximumNumberOfMatchOptionsVisual +
                ", coefficientOfCoincidenceTag=" + coefficientOfCoincidenceTag +
                ", minimumPrefixLengthTag=" + minimumPrefixLengthTag +
                ", maximumNumberOfMatchOptionsTag=" + maximumNumberOfMatchOptionsTag +
