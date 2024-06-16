@@ -299,25 +299,25 @@ public class SearchServiceImpl implements SearchService {
         System.out.println(dto.toString());
         if (dto.getTypeSearch().equals("embedding")) {
             SearchByParameterDto searchByParameterDto = new SearchByParameterDto(dto.getQuery(),
-                    2,
+                    1,
+                    1,
+                    50,
+                    0,
                     2,
                     50,
+                    0,
                     2,
-                    3,
-                    5,
+                    50,
+                    1,
+                    2,
+                    50,
+                    1,
+                    0,
                     1,
                     1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1);
+                    2,
+                    4,
+                    4);
             return searchVideosByCombine(searchByParameterDto, dto.getPage(), dto.getSize());
         }else {
             request = SearchUtil.buildSearchRequest(
@@ -354,7 +354,18 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderUserDescription(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = "cosineSimilarity(params.queryVector, 'embeddingUserDescription') + 1.0;";
+        var script = """
+                    if (doc['embeddingUserDescription'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embeddingUserDescription') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)
@@ -363,7 +374,18 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderAudio(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = "cosineSimilarity(params.queryVector, 'embeddingAudio') + 1.0;";
+        var script = """
+                    if (doc['embeddingAudio'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embeddingAudio') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)
@@ -372,7 +394,18 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderVisual(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = "cosineSimilarity(params.queryVector, 'embeddingVisual') + 1.0;";
+        var script = """
+                    if (doc['embeddingVisual'].size() == 0) {
+                        return 0.0;
+                    } else {
+                        def score = cosineSimilarity(params.queryVector, 'embeddingVisual') + 1.0;
+                        if (Double.isNaN(score) || score < 0) {
+                            return 0.0;
+                        } else {
+                            return score;
+                        }
+                    }
+                """;
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)
