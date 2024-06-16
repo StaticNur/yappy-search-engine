@@ -88,7 +88,7 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Override
     public void indexAllVideoFromDb() {
-        long batchSize = 5_000;
+        long batchSize = 1_000;
         long fromIndex = 0;
         long toIndex;
 
@@ -102,6 +102,7 @@ public class IndexingServiceImpl implements IndexingService {
             BulkRequest bulkRequest = prepareBulkRequest(batch);
             executeBulkRequest(bulkRequest);
             fromIndex += batchSize;
+            System.out.println("Проиндексировано "+fromIndex+" из БД в ElasticSearch");
         }
     }
 

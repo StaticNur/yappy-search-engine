@@ -22,6 +22,14 @@ public class VideoMapper {
         if(embeddingAudio.length < 10){
             embeddingAudio = EMPTY_VECTOR;
         }
+        double[] embeddingVisual = convertToFloatArray(mediaContent.getEmbeddingVisual());
+        if(embeddingAudio.length < 10){
+            embeddingAudio = EMPTY_VECTOR;
+        }
+        double[] embeddingUserDescription = convertToFloatArray(mediaContent.getEmbeddingUserDescription());
+        if(embeddingAudio.length < 10){
+            embeddingAudio = EMPTY_VECTOR;
+        }
 
         return new Video(
                 mediaContent.getUuid().toString(),
@@ -36,12 +44,15 @@ public class VideoMapper {
                 popularity.toString(),
                 mediaContent.getHash(),
                 embeddingAudio,
-                EMPTY_VECTOR,
-                EMPTY_VECTOR
+                embeddingVisual,
+                embeddingUserDescription
         );
     }
 
     private double[] convertToFloatArray(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return EMPTY_VECTOR; // Return an empty array if input is null or empty
+        }
         input = input.replaceAll("[\\[\\]]", "");
         String[] parts = input.split(",");
         double[] result = new double[parts.length];
@@ -50,6 +61,16 @@ public class VideoMapper {
         }
         return result;
     }
+
+    /*private double[] convertToFloatArray(String input) {
+        input = input.replaceAll("[\\[\\]]", "");
+        String[] parts = input.split(",");
+        double[] result = new double[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            result[i] = Double.parseDouble(parts[i].trim());
+        }
+        return result;
+    }*/
 
     static {
         /*StringBuilder sb = new StringBuilder();
