@@ -23,12 +23,12 @@ public class VideoMapper {
             embeddingAudio = EMPTY_VECTOR;
         }
         double[] embeddingVisual = convertToFloatArray(mediaContent.getEmbeddingVisual());
-        if(embeddingAudio.length < 10){
-            embeddingAudio = EMPTY_VECTOR;
+        if(embeddingVisual.length < 10){
+            embeddingVisual = EMPTY_VECTOR;
         }
         double[] embeddingUserDescription = convertToFloatArray(mediaContent.getEmbeddingUserDescription());
-        if(embeddingAudio.length < 10){
-            embeddingAudio = EMPTY_VECTOR;
+        if(embeddingUserDescription.length < 10){
+            embeddingUserDescription = EMPTY_VECTOR;
         }
 
         return new Video(
@@ -51,7 +51,7 @@ public class VideoMapper {
 
     private double[] convertToFloatArray(String input) {
         if (input == null || input.trim().isEmpty()) {
-            return EMPTY_VECTOR; // Return an empty array if input is null or empty
+            return EMPTY_VECTOR;
         }
         input = input.replaceAll("[\\[\\]]", "");
         String[] parts = input.split(",");
@@ -73,15 +73,9 @@ public class VideoMapper {
     }*/
 
     static {
-        /*StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < EMBEDDING_LENGTH; i++) {
-            sb.append("0.0");
-            if (i < EMBEDDING_LENGTH - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append("]");*/
         EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();
+        for (int i = 0; i < EMBEDDING_LENGTH; i++) {
+            EMPTY_VECTOR[i] = 1.0;
+        }
     }
 }

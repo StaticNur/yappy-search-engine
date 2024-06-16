@@ -4,10 +4,10 @@
       "uuid": { "type": "keyword" },
       "url": { "type": "keyword" },
       "title": { "type": "text" },
-      "description_user": { "type": "text" },
-      "transcription_audio": { "type": "text" },
-      "language_audio": { "type": "text" },
-      "description_visual": { "type": "text" },
+      "descriptionUser": { "type": "text" },
+      "transcriptionAudio": { "type": "text" },
+      "languageAudio": { "type": "text" },
+      "descriptionVisual": { "type": "text" },
       "tags": { "type": "text" },
       "created": {
         "type": "date",
@@ -15,15 +15,15 @@
       },
       "popularity": { "type": "integer"},
       "hash": { "type": "text"},
-      "embedding_audio": {
+      "embeddingAudio": {
         "type": "dense_vector",
         "dims": 640
       },
-      "embedding_visual": {
+      "embeddingVisual": {
         "type": "dense_vector",
         "dims": 640
       },
-      "embedding_user_description": {
+      "embeddingUserDescription": {
         "type": "dense_vector",
         "dims": 640
       }

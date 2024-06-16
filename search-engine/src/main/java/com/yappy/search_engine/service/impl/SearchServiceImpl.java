@@ -354,18 +354,7 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderUserDescription(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = """
-                    if (doc['embedding_user_description'].size() == 0) {
-                        return 0.0;
-                    } else {
-                        def score = cosineSimilarity(params.queryVector, 'embedding_user_description') + 1.0;
-                        if (Double.isNaN(score) || score < 0) {
-                            return 0.0;
-                        } else {
-                            return score;
-                        }
-                    }
-                """;
+        var script = "cosineSimilarity(params.queryVector, 'embeddingUserDescription') + 1.0;";
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)
@@ -374,18 +363,7 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderAudio(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = """
-                    if (doc['embedding_audio'].size() == 0) {
-                        return 0.0;
-                    } else {
-                        def score = cosineSimilarity(params.queryVector, 'embedding_audio') + 1.0;
-                        if (Double.isNaN(score) || score < 0) {
-                            return 0.0;
-                        } else {
-                            return score;
-                        }
-                    }
-                """;
+        var script = "cosineSimilarity(params.queryVector, 'embeddingAudio') + 1.0;";
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)
@@ -394,18 +372,7 @@ public class SearchServiceImpl implements SearchService {
 
     private ScriptScoreQueryBuilder getScriptBuilderVisual(ScriptType scriptType, String language,
                                                           Map<String, Object> params, float boost){
-        var script = """
-                    if (doc['embedding_visual'].size() == 0) {
-                        return 0.0;
-                    } else {
-                        def score = cosineSimilarity(params.queryVector, 'embedding_visual') + 1.0;
-                        if (Double.isNaN(score) || score < 0) {
-                            return 0.0;
-                        } else {
-                            return score;
-                        }
-                    }
-                """;
+        var script = "cosineSimilarity(params.queryVector, 'embeddingVisual') + 1.0;";
         return QueryBuilders.scriptScoreQuery(
                 QueryBuilders.matchAllQuery(),
                 new Script(scriptType, language, script, params)

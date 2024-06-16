@@ -13,8 +13,7 @@ services:
       - discovery.type=single-node
       - http.max_content_length=1000mb
       - indices.memory.index_buffer_size=30%
-      - thread_pool.write.queue_size=500
-      - thread_pool.bulk.queue_size=1000  # Increase bulk queue size
+      - thread_pool.write.queue_size=500  # Increase write queue size
       - indices.fielddata.cache.size=20%  # Adjust fielddata cache size
       - ES_JAVA_OPTS=-Xms4g -Xmx4g
     volumes:
