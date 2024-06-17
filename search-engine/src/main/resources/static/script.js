@@ -6,9 +6,10 @@ let mySavedVideosCurrentIndex = 0;
 
 var isMyVideo = false;
 
-const host = "localhost";//192.144.12.231
+const host = "192.144.12.231";//localhost
 
 document.addEventListener('DOMContentLoaded', function () {
+    showLoadingSearch();
     const startTime = performance.now();
     try {
         fetch(`http://${host}:8080/recommendations`, {
@@ -25,16 +26,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateVideo(currentIndex);
                 updateResults(data.videos);
                 showMessage(startTime, 'success', `Рекомендательная система нашла более ${data.totalHits} видео. Популярность по частоте использования тега`);
+                hideLoadingAll();
             } else {
                 clear();
+                hideLoadingAll();
                 showMessage(startTime, 'info', 'Рекомендательные видео не найдены');
             }
         }).catch(error => {
             clear();
+            hideLoadingAll();
             showMessage(startTime, 'error', error);
         });
     } catch (error) {
         clear();
+        hideLoadingAll();
         showMessage(startTime, 'error', 'Произошла ошибка при получении популярных видео');
     }
 });
@@ -45,6 +50,7 @@ function showSaveForm(id, surname, name, otchestvo, job, birthday) {
 }
 
 function saveNewVideo() {
+    showLoadingAll();
     const url = document.getElementById('url').value;
     const title = document.getElementById('title').value;
     const description = document.getElementById('description').value;
@@ -79,8 +85,11 @@ function saveNewVideo() {
             updateVideo(mySavedVideosCurrentIndex);
             updateSavedVideos(data, mySavedVideosCurrentIndex);
             showMessage(startTime, 'success', 'Загрузка видео успешно завершена.');
+            hideLoadingAll();
         })
             .catch(error => {
+            hideSaveForm();
+            hideLoadingAll();
             showMessage(startTime, 'error', `Произошла ошибка при загрузке видео. ${error.message}`);
         });
         hideSaveForm();
@@ -157,6 +166,7 @@ document.getElementById('btnSearch').addEventListener('click', function (event) 
 });
 
 function sendSearchRequest() {
+    showLoadingSearch();
     const queryText = document.getElementById('queryText').value;
     const suggestionsList = document.getElementById('suggestions-list');
     suggestionsList.style.display = 'none';
@@ -224,15 +234,19 @@ function sendSearchRequest() {
                 clear();
                 showMessage(startTime, 'info', 'Видео не найдены');
             }
+            hideLoadingSearch();
         }).catch(error => {
             clear();
+            hideLoadingSearch();
             showMessage(startTime, 'error', 'Видео не найдены');
         });
     } catch (error) {
         clear();
+        hideLoadingSearch();
         showMessage(startTime, 'error', 'Произошла ошибка при отправке формы');
     }
 }
+
 function getDate(dateFilter){
     let date;
     switch (dateFilter) {
@@ -388,12 +402,12 @@ document.getElementById('info-link').addEventListener('click', function(event) {
             throw new Error('Error sending data');
         }
     }).then(redirectUrl => {
+        console.log("Redirecting to: ", redirectUrl);
         window.location.href = redirectUrl;
     }).catch(error => {
         console.error('Error:', error);
     });
 });
-
 
 
 function updateVideo(index) {
@@ -552,6 +566,26 @@ function saveFilter() {
     hideFilterForm();
 }
 
+function showLoadingAll(){
+    const loadingElement = document.getElementById('loading');
+    const loadingElementSave = document.getElementById('loading-save');
+    loadingElement.style.display = 'block';
+    loadingElementSave.style.display = 'block';
+}
+function showLoadingSearch(){
+    const loadingElement = document.getElementById('loading');
+    loadingElement.style.display = 'block';
+}
+function hideLoadingAll(){
+    const loadingElement = document.getElementById('loading');
+    const loadingElementSave = document.getElementById('loading-save');
+    loadingElement.style.display = 'none';
+    loadingElementSave.style.display = 'none';
+}
+function hideLoadingSearch(){
+    const loadingElement = document.getElementById('loading');
+    loadingElement.style.display = 'none';
+}
 
 function clear() {
     currentIndex = 0;

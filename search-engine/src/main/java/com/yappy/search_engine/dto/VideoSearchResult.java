@@ -6,20 +6,20 @@ import java.util.List;
 
 public class VideoSearchResult {
     private long totalHits;
-    private List<Video> videos;
+    private List<VideoResponse> videos;
 
     public VideoSearchResult(){}
 
-    public VideoSearchResult(List<Video> videos, long totalHits) {
+    public VideoSearchResult(List<VideoResponse> videos, long totalHits) {
         this.videos = videos;
         this.totalHits = totalHits;
     }
 
-    public List<Video> getVideos() {
+    public List<VideoResponse> getVideos() {
         return videos;
     }
 
-    public void setVideos(List<Video> videos) {
+    public void setVideos(List<VideoResponse> videos) {
         this.videos = videos;
     }
 

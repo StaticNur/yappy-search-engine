@@ -1,15 +1,41 @@
 package com.yappy.search_engine.mapper;
 
 import com.yappy.search_engine.document.Video;
+import com.yappy.search_engine.dto.VideoResponse;
 import com.yappy.search_engine.model.MediaContent;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class VideoMapper {
     private static final double[] EMPTY_VECTOR;
     private final static int EMBEDDING_LENGTH = 640;
+
+    public static List<VideoResponse> buildVideoResponse(List<Video> videos){
+        List<VideoResponse> videosResponse = new ArrayList<>();
+        for (Video video: videos){
+            videosResponse.add(new VideoResponse(
+                    video.getUuid(),
+                    video.getUrl(),
+                    video.getTitle(),
+                    video.getDescriptionUser(),
+                    video.getTranscriptionAudio(),
+                    video.getLanguageAudio(),
+                    video.getDescriptionVisual(),
+                    video.getTags(),
+                    video.getCreated(),
+                    video.getPopularity(),
+                    video.getHash(),
+                    video.getEmbeddingAudio(),
+                    video.getEmbeddingVisual(),
+                    video.getEmbeddingUserDescription()
+            ));
+        }
+        return videosResponse;
+    }
 
     public Video buildVideoFromMediaContent(MediaContent mediaContent)  {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");

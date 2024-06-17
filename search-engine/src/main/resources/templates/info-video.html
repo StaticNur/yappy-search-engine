@@ -53,13 +53,13 @@
             <p id="hash" th:text="${videoData.hash}">hash</p>
 
             <span style="font-weight:bold">embeddingAudio:</span>
-            <p id="embeddingAudio" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingAudio)}">embeddingAudio</p>
+            <p id="embeddingAudio" th:text="${videoData.embeddingAudio}">embeddingAudio</p>
 
             <span style="font-weight:bold">embeddingVisual:</span>
-            <p id="embeddingVisual" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingVisual)}">embeddingVisual</p>
+            <p id="embeddingVisual" th:text="${videoData.embeddingVisual}">embeddingVisual</p>
 
             <span style="font-weight:bold">embeddingUserDescription:</span>
-            <p id="embeddingUserDescription" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingUserDescription)}">embeddingUserDescription</p>
+            <p id="embeddingUserDescription" th:text="${videoData.embeddingUserDescription}">embeddingUserDescription</p>
         </div>
         <div class="video-container-info-page">
             <video controls>

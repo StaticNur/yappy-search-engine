@@ -6,6 +6,7 @@ import com.yappy.search_engine.dto.SearchRequestDto;
 import com.yappy.search_engine.dto.VideoSearchResult;
 import com.yappy.search_engine.helper.Indices;
 import com.yappy.search_engine.mapper.SearchHitMapper;
+import com.yappy.search_engine.mapper.VideoMapper;
 import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.SearchService;
 import com.yappy.search_engine.search.SearchUtil;
@@ -87,7 +88,7 @@ public class SearchServiceImpl implements SearchService {
         long totalHits = searchResponse.getHits().getTotalHits().value;
         List<Video> videos = extractVideosFromResponse(searchResponse);
 
-        return new VideoSearchResult(videos, totalHits);
+        return new VideoSearchResult(VideoMapper.buildVideoResponse(videos), totalHits);
     }
 
 
@@ -155,7 +156,7 @@ public class SearchServiceImpl implements SearchService {
         long totalHits = searchResponse.getHits().getTotalHits().value;
         List<Video> videos = extractVideosFromResponse(searchResponse);
 
-        return new VideoSearchResult(videos, totalHits);
+        return new VideoSearchResult(VideoMapper.buildVideoResponse(videos), totalHits);
     }
 
     @Override
@@ -200,7 +201,7 @@ public class SearchServiceImpl implements SearchService {
         long totalHits = searchResponse.getHits().getTotalHits().value;
         List<Video> videos = extractVideosFromResponse(searchResponse);
 
-        return new VideoSearchResult(videos, totalHits);
+        return new VideoSearchResult(VideoMapper.buildVideoResponse(videos), totalHits);
     }
 
     @Override
@@ -284,7 +285,7 @@ public class SearchServiceImpl implements SearchService {
         long totalHits = searchResponse.getHits().getTotalHits().value;
         List<Video> videos = extractVideosFromResponse(searchResponse);
 
-        return new VideoSearchResult(videos, totalHits);
+        return new VideoSearchResult(VideoMapper.buildVideoResponse(videos), totalHits);
     }
 
     @Override
@@ -316,7 +317,7 @@ public class SearchServiceImpl implements SearchService {
                     1,
                     1,
                     2,
-                    4,
+                    10,
                     4);
             return searchVideosByCombine(searchByParameterDto, dto.getPage(), dto.getSize());
         }else {
@@ -337,7 +338,7 @@ public class SearchServiceImpl implements SearchService {
             long totalHits = response.getHits().getTotalHits().value;
             List<Video> videos = extractVideosFromResponse(response);
 
-            return new VideoSearchResult(videos, totalHits);
+            return new VideoSearchResult(VideoMapper.buildVideoResponse(videos), totalHits);
         } catch (Exception e) {
             return new VideoSearchResult(Collections.emptyList(), 0);
         }
