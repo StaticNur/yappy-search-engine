@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Для разработчиков</title>
@@ -15,55 +15,55 @@
 <div class="container" style="margin-top: 10px;">
     <h1>Подробная Информация о видео</h1>
     <div class="main-container-info-page">
-        <div>
+        <div th:if="${videoData}">
             <span style="font-weight:bold">время индексации:</span>
             <p id="indexingTime">indexingTime</p>
 
             <span style="font-weight:bold">uuid:</span>
-            <p id="uuid">uuid</p>
+            <p id="uuid" th:text="${videoData.uuid}">uuid</p>
 
             <span style="font-weight:bold">url:</span>
-            <p id="url">url</p>
+            <p id="url" th:text="${videoData.url}">url</p>
 
             <span style="font-weight:bold">title:</span>
-            <p id="title">title</p>
+            <p id="title" th:text="${videoData.title}">title</p>
 
             <span style="font-weight:bold">descriptionUser:</span>
-            <p id="descriptionUser">descriptionUser</p>
+            <p id="descriptionUser" th:text="${videoData.descriptionUser}">descriptionUser</p>
 
             <span style="font-weight:bold">transcriptionAudio:</span>
-            <p id="transcriptionAudio">transcriptionAudio</p>
+            <p id="transcriptionAudio" th:text="${videoData.transcriptionAudio}">transcriptionAudio</p>
 
             <span style="font-weight:bold">languageAudio:</span>
-            <p id="languageAudio">languageAudio</p>
+            <p id="languageAudio" th:text="${videoData.languageAudio}">languageAudio</p>
 
             <span style="font-weight:bold">descriptionVisual:</span>
-            <p id="descriptionVisual">descriptionVisual</p>
+            <p id="descriptionVisual" th:text="${videoData.descriptionVisual}">descriptionVisual</p>
 
             <span style="font-weight:bold">tags:</span>
-            <p id="tags" style="color: blue; word-wrap: break-word;">tags</p>
+            <p id="tags" style="color: blue; word-wrap: break-word;" th:text="${videoData.tags}">tags</p>
 
             <span style="font-weight:bold">created:</span>
-            <p id="created">created</p>
+            <p id="created" th:text="${videoData.created}">created</p>
 
             <span style="font-weight:bold">popularity:</span>
-            <p id="popularity">popularity</p>
+            <p id="popularity" th:text="${videoData.popularity}">popularity</p>
 
             <span style="font-weight:bold">hash:</span>
-            <p id="hash">hash</p>
+            <p id="hash" th:text="${videoData.hash}">hash</p>
 
             <span style="font-weight:bold">embeddingAudio:</span>
-            <p id="embeddingAudio">embeddingAudio</p>
+            <p id="embeddingAudio" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingAudio)}">embeddingAudio</p>
 
             <span style="font-weight:bold">embeddingVisual:</span>
-            <p id="embeddingVisual">embeddingVisual</p>
+            <p id="embeddingVisual" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingVisual)}">embeddingVisual</p>
 
             <span style="font-weight:bold">embeddingUserDescription:</span>
-            <p id="embeddingUserDescription">embeddingUserDescription</p>
+            <p id="embeddingUserDescription" th:text="${@arrayUtils.doubleArrayToString(videoData.embeddingUserDescription)}">embeddingUserDescription</p>
         </div>
         <div class="video-container-info-page">
             <video controls>
-                <source src="#"
+                <source th:src="${videoData.url}"
                         type="video/mp4">
                 Your browser does not support the video tag.
             </video>

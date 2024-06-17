@@ -7,13 +7,16 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.util.Random;
+
 public final class SearchUtil {
 
     private SearchUtil() {}
 
     public static SearchRequest buildSearchRecommendationRequest(final String indexName) {
         try {
-            final int from = 0;
+            Random random = new Random();
+            final int from = random.nextInt(10);
             final int size = 15;
 
             // Создаем BoolQueryBuilder для исключения слов
@@ -79,35 +82,25 @@ public final class SearchUtil {
     private static BoolQueryBuilder getQueryBuilder(String query) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
-        boolQueryBuilder.should(QueryBuilders
-                .matchQuery("title", query)
-                .fuzziness(Fuzziness.AUTO));
-        boolQueryBuilder.should(QueryBuilders
-                .matchQuery("descriptionUser", query)
-                .fuzziness(Fuzziness.AUTO));
-
         String[] queryParts = query.split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
             System.out.println("tags:" + part);
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
-                tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part).boost(2.0f));
+                tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part)
+                        .boost(2.0f));
             } else {
-                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part).fuzziness(Fuzziness.AUTO));
+                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
+                        .fuzziness(Fuzziness.AUTO));
             }
         }
-        boolQueryBuilder.should(tagsQueryBuilder);
+        boolQueryBuilder
+                .should(QueryBuilders.matchQuery("title", query).fuzziness(Fuzziness.AUTO))
+                .should(QueryBuilders.matchQuery("descriptionUser", query).fuzziness(Fuzziness.AUTO))
+                .should(tagsQueryBuilder);
         return boolQueryBuilder;
     }
-
-    /*private static QueryBuilder getQueryBuilder(final SearchRequestDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        return null;
-    }*/
 
     private static QueryBuilder getQueryBuilder(final String field, final String date) {
         return QueryBuilders.rangeQuery(field).gte(date);

@@ -6,7 +6,7 @@ let mySavedVideosCurrentIndex = 0;
 
 var isMyVideo = false;
 
-const host = "192.144.12.231";//localhost
+const host = "localhost";//192.144.12.231
 
 document.addEventListener('DOMContentLoaded', function () {
     const startTime = performance.now();
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 videos = data.videos;
                 updateVideo(currentIndex);
                 updateResults(data.videos);
-                showMessage(startTime, 'success', `Найдено более ${data.totalHits} видео. Популярность по частоте использования тега`);
+                showMessage(startTime, 'success', `Рекомендательная система нашла более ${data.totalHits} видео. Популярность по частоте использования тега`);
             } else {
                 clear();
                 showMessage(startTime, 'info', 'Рекомендательные видео не найдены');
@@ -207,7 +207,7 @@ function sendSearchRequest() {
             body: JSON.stringify(searchRequestDto)
         }).then(response => response.json())
             .then(data => {
-            if (data) {
+            if (data || data.totalHits > 0) {
                 isMyVideo = false;
                 currentIndex = 0;
                 console.log(data.videos);
@@ -226,7 +226,7 @@ function sendSearchRequest() {
             }
         }).catch(error => {
             clear();
-            showMessage(startTime, 'error', error.message || 'Произошла ошибка при выполнении запроса');
+            showMessage(startTime, 'error', 'Видео не найдены');
         });
     } catch (error) {
         clear();
@@ -368,16 +368,33 @@ function playVideo(videoSrc, popularity, videoTitle, videoDescription, videoTags
 
 document.getElementById('info-link').addEventListener('click', function(event) {
     event.preventDefault();
-    const url = "info-video.html";
-    var encodedQuery;
-    if(isMyVideo){
-        encodedQuery = encodeURIComponent(JSON.stringify(mySavedVideos[mySavedVideosCurrentIndex]));
-    }else{
-        encodedQuery = encodeURIComponent(JSON.stringify(videos[currentIndex]));
+    const url = `http://${host}:8080/info-video`;
+    var data;
+    if (isMyVideo) {
+        data = JSON.stringify(mySavedVideos[mySavedVideosCurrentIndex]);
+    } else {
+        data = JSON.stringify(videos[currentIndex]);
     }
-    console.log("Encoded string: ", encodedQuery);
-    window.location.href = url + "?data=" + encodedQuery;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            throw new Error('Error sending data');
+        }
+    }).then(redirectUrl => {
+        window.location.href = redirectUrl;
+    }).catch(error => {
+        console.error('Error:', error);
+    });
 });
+
+
 
 function updateVideo(index) {
     var video = [];
