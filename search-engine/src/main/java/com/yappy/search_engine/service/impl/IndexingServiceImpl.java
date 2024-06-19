@@ -38,7 +38,7 @@ public class IndexingServiceImpl implements IndexingService {
     private final static String INDEX_VIDEO_NAME = "videos";
     private final static String INDEX_AUTOCOMPLETE_NAME = "suggestions";
     private final static String FIELD_AUTOCOMPLETE = "suggestion";
-    private static final String EMPTY_VECTOR;
+    private static final double[] EMPTY_VECTOR;
     private final static int EMBEDDING_LENGTH = 640;
 
     private final RestHighLevelClient client;
@@ -249,31 +249,36 @@ public class IndexingServiceImpl implements IndexingService {
         VisualDescription visualDescription = apiClient.getVisualDescription(url);
         videoForPostgres.setDescriptionVisual(visualDescription.getResult());
 
-
-        double[] embeddingAudio = apiClient.getEmbedding(transcriptionAudio.getText());
+        String resultAudio = transcriptionAudio.getText();
+        double[] embeddingAudio = EMPTY_VECTOR;
+        if(resultAudio != null && !resultAudio.isBlank()){
+            embeddingAudio = apiClient.getEmbedding(transcriptionAudio.getText());
+        }
         videoForPostgres.setEmbeddingAudio(Arrays.toString(embeddingAudio));
 
-        double[] embeddingVisual = apiClient.getEmbedding(visualDescription.getResult());
+        String resultVisual = visualDescription.getResult();
+        double[] embeddingVisual = EMPTY_VECTOR;
+        if(resultVisual != null && !resultVisual.isBlank()){
+            embeddingVisual = apiClient.getEmbedding(visualDescription.getResult());
+        }
         videoForPostgres.setEmbeddingVisual(Arrays.toString(embeddingVisual));
 
 
         String userAllDescription = videoForPostgres.getTitle()
                                     + " " + videoForPostgres.getDescriptionUser()
                                     + " " + videoForPostgres.getTags();
-        double[] embeddingUserDescription = apiClient.getEmbedding(userAllDescription.trim());
+
+        double[] embeddingUserDescription = EMPTY_VECTOR;
+        if(!userAllDescription.isBlank()){
+            embeddingUserDescription = apiClient.getEmbedding(userAllDescription.trim());
+        }
         videoForPostgres.setEmbeddingUserDescription(Arrays.toString(embeddingUserDescription));
     }
 
     static {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();
         for (int i = 0; i < EMBEDDING_LENGTH; i++) {
-            sb.append("0.0");
-            if (i < EMBEDDING_LENGTH - 1) {
-                sb.append(", ");
-            }
+            EMPTY_VECTOR[i] = 1.0;
         }
-        sb.append("]");
-        EMPTY_VECTOR = sb.toString();
     }
 }

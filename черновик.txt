@@ -16,7 +16,7 @@ sudo apt install openjdk-17-jdk
 
 sudo chown -R 1000:1000 elasticsearch_data
 sudo chmod -R 777 elasticsearch_data
-docker restart odfe-node
+sudo docker restart odfe-node
 
 sudo usermod -aG docker user1
 sudo service docker restart
