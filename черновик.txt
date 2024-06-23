@@ -7,6 +7,8 @@ sudo rm -rf elasticsearch_data pg_data
 
 scp M:/projectsPortfolio/yappy-search-engine/search-engine/src/main/resources/датасет-видео-тег.xlsx user1@192.144.12.231:/opt/yappy/
 
+git pull --no-rebase
+
 mvn clean
 mvn clean install
 

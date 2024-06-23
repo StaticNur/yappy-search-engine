@@ -84,7 +84,7 @@ public final class SearchUtil {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.should(QueryBuilders
                 .matchQuery("descriptionUser", query)
-                .fuzziness(Fuzziness.AUTO)).boost(1);
+                .fuzziness(Fuzziness.AUTO));
 
         boolQueryBuilder.should(QueryBuilders
                 .matchQuery("transcriptionAudio", query)

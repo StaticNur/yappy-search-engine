@@ -214,13 +214,13 @@ public class SearchServiceImpl implements SearchService {
                 .postFilter(dateQuery);
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderUserDescription
-                = getScriptBuilder("embeddingUserDescription", embeddingQuery, dto.getBoostDescriptionUser());
+                = getScriptBuilder("embeddingUserDescription", embeddingQuery, dto.getBoostEmbeddingUserDescription());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderAudio
                 = getScriptBuilder("embeddingAudio", embeddingQuery, dto.getBoostEmbeddingAudio());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderVisual
-                = getScriptBuilder("embeddingVisual", embeddingQuery, dto.getBoostDescriptionVisual());
+                = getScriptBuilder("embeddingVisual", embeddingQuery, dto.getBoostEmbeddingVisual());
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.should(QueryBuilders
@@ -254,7 +254,7 @@ public class SearchServiceImpl implements SearchService {
             } else {
                 tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
                         .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceTag()))  // Установка коэффициента совпадения
-                        .prefixLength(dto.getMaximumNumberOfMatchOptionsTag())                    // Минимальная длина префикса, которая должна быть неизменной
+                        .prefixLength(dto.getMinimumPrefixLengthTag())                    // Минимальная длина префикса, которая должна быть неизменной
                         .maxExpansions(dto.getMaximumNumberOfMatchOptionsTag()));                // Максимальное количество вариантов совпадения
             }
         }
