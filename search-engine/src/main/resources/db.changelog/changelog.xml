@@ -9,4 +9,5 @@
     <include file="/v.1.0.0/create-schema.xml" relativeToChangelogFile="true"/>
     <include file="/v.1.0.0/create-table.xml" relativeToChangelogFile="true"/>
     <include file="/v.1.0.0/create-index.xml" relativeToChangelogFile="true"/>
+    <include file="/v.1.0.0/add-new-column-ner.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -230,8 +230,6 @@ public class IndexingServiceImpl implements IndexingService {
             VisualDescription visualDescription = visualDescriptionFuture.get();
             videoForPostgres.setDescriptionVisual(visualDescription.getResult());
 
-
-
             // Создаем асинхронные задачи для получения эмбеддингов
             CompletableFuture<double[]> embeddingAudioFuture = CompletableFuture.supplyAsync(
                     () -> {
@@ -275,6 +273,8 @@ public class IndexingServiceImpl implements IndexingService {
 
             double[] embeddingUserDescription = embeddingUserDescriptionFuture.get();
             videoForPostgres.setEmbeddingUserDescription(Arrays.toString(embeddingUserDescription));
+
+            videoForPostgres.setNer("");
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

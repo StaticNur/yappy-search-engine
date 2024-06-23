@@ -56,6 +56,7 @@ public class ExcelDataMapper {
             mediaContent.setPopularity(maxPopularity);
 
             mediaContent.setHash("");
+            mediaContent.setNer("");
             String empty = "[0.0]";
             mediaContent.setEmbeddingAudio(empty);
             mediaContent.setEmbeddingVisual(empty);

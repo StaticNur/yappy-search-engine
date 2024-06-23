@@ -22,6 +22,7 @@ public class SearchHitMapper {
                 getStringValue(sourceAsMap, "created"),
                 getStringValue(sourceAsMap, "popularity", "0"),
                 getStringValue(sourceAsMap, "hash"),
+                getStringValue(sourceAsMap, "ner"),
                 convertToFloatArray(getStringValue(sourceAsMap, "embeddingAudio")),
                 convertToFloatArray(getStringValue(sourceAsMap, "embeddingVisual")),
                 convertToFloatArray(getStringValue(sourceAsMap, "embeddingUserDescription"))

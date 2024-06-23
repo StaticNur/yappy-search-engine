@@ -14,6 +14,7 @@ public class Video {
     private String created;
     private String popularity;
     private String hash;
+    private String ner;
     private double[] embeddingAudio;
     private double[] embeddingVisual;
     private double[] embeddingUserDescription;
@@ -23,7 +24,7 @@ public class Video {
 
     public Video(String uuid, String url, String title, String descriptionUser, String transcriptionAudio,
                  String languageAudio, String descriptionVisual, String tags, String created, String popularity,
-                 String hash, double[] embeddingAudio, double[] embeddingVisual, double[] embeddingUserDescription) {
+                 String hash, String ner, double[] embeddingAudio, double[] embeddingVisual, double[] embeddingUserDescription) {
         this.uuid = uuid;
         this.url = url;
         this.title = title;
@@ -35,6 +36,7 @@ public class Video {
         this.created = created;
         this.popularity = popularity;
         this.hash = hash;
+        this.ner = ner;
         this.embeddingAudio = embeddingAudio;
         this.embeddingVisual = embeddingVisual;
         this.embeddingUserDescription = embeddingUserDescription;
@@ -128,6 +130,14 @@ public class Video {
         this.hash = hash;
     }
 
+    public String getNer() {
+        return ner;
+    }
+
+    public void setNer(String ner) {
+        this.ner = ner;
+    }
+
     public double[] getEmbeddingAudio() {
         return embeddingAudio;
     }
@@ -166,9 +176,10 @@ public class Video {
                ", created='" + created + '\'' +
                ", popularity='" + popularity + '\'' +
                ", hash='" + hash + '\'' +
+               ", ner='" + ner + '\'' +
                ", embeddingAudio=" + Arrays.toString(embeddingAudio) +
                ", embeddingVisual=" + Arrays.toString(embeddingVisual) +
-               ", embeddingUserDescription=" + Arrays.toString(embeddingUserDescription) + '\'' +
+               ", embeddingUserDescription=" + Arrays.toString(embeddingUserDescription) +
                '}';
     }
 }

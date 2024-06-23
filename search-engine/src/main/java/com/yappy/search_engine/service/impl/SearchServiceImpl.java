@@ -134,7 +134,7 @@ public class SearchServiceImpl implements SearchService {
             } else {
                 tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
                         .fuzziness(Fuzziness.fromEdits(searchByParameterDto.getCoefficientOfCoincidenceTag()))  // Установка коэффициента совпадения (возможны 0, 1, 2 и 3)
-                        .prefixLength(searchByParameterDto.getMaximumNumberOfMatchOptionsTag())                    // Минимальная длина префикса, которая должна быть неизменной
+                        .prefixLength(searchByParameterDto.getMinimumPrefixLengthTag())                    // Минимальная длина префикса, которая должна быть неизменной
                         .maxExpansions(searchByParameterDto.getMaximumNumberOfMatchOptionsTag()));                // Максимальное количество вариантов совпадения
             }
         }
@@ -171,13 +171,13 @@ public class SearchServiceImpl implements SearchService {
                 .size(size);
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderUserDescription
-                = getScriptBuilder("embeddingUserDescription", embeddingQuery, embedding.getBoostDescriptionUser());
+                = getScriptBuilder("embeddingUserDescription", embeddingQuery, embedding.getBoostEmbeddingUserDescription());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderAudio
                 = getScriptBuilder("embeddingAudio", embeddingQuery, embedding.getBoostEmbeddingAudio());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderVisual
-                = getScriptBuilder("embeddingVisual", embeddingQuery, embedding.getBoostDescriptionVisual());
+                = getScriptBuilder("embeddingVisual", embeddingQuery, embedding.getBoostEmbeddingVisual());
 
         BoolQueryBuilder combinedQueryBuilder = QueryBuilders.boolQuery()
                 .should(scriptScoreQueryBuilderUserDescription)

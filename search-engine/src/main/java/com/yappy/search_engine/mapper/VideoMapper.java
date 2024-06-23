@@ -75,6 +75,10 @@ public class VideoMapper {
         if (popularity == null) {
             popularity = 0;
         }
+        String ner = mediaContent.getNer();
+        if (ner == null) {
+            ner = "";
+        }
         double[] embeddingAudio = convertToDoubleArray(mediaContent.getEmbeddingAudio());
         if (embeddingAudio.length < 10) {
             embeddingAudio = EMPTY_VECTOR;
@@ -87,7 +91,6 @@ public class VideoMapper {
         if (embeddingUserDescription.length < 10) {
             embeddingUserDescription = EMPTY_VECTOR;
         }
-
         return new Video(
                 mediaContent.getUuid().toString(),
                 mediaContent.getUrl(),
@@ -100,6 +103,7 @@ public class VideoMapper {
                 formattedDate,
                 popularity.toString(),
                 mediaContent.getHash(),
+                ner,
                 embeddingAudio,
                 embeddingVisual,
                 embeddingUserDescription

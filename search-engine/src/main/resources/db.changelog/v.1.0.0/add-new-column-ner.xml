@@ -5,5 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
+    <changeSet id="create-column-ner" author="Mukhammadnur">
+        <addColumn schemaName="video_data" tableName="videos">
+            <column name="ner" type="varchar(512)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

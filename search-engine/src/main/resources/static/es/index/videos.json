@@ -15,6 +15,7 @@
       },
       "popularity": { "type": "integer"},
       "hash": { "type": "text"},
+      "ner": { "type": "text"},
       "embeddingAudio": {
         "type": "dense_vector",
         "dims": 640

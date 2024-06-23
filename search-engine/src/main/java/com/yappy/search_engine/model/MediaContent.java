@@ -58,6 +58,9 @@ public class MediaContent {
     @Column(name = "indexing_time")
     private Long indexingTime;
 
+    @Column(name = "ner")
+    private String ner;
+
     public MediaContent() {
     }
 
@@ -220,6 +223,14 @@ public class MediaContent {
         this.indexingTime = indexingTime;
     }
 
+    public String getNer() {
+        return ner;
+    }
+
+    public void setNer(String ner) {
+        this.ner = ner;
+    }
+
     @Override
     public String toString() {
         return "MediaContent{" +
@@ -238,7 +249,8 @@ public class MediaContent {
                ", embeddingAudio='" + embeddingAudio + '\'' +
                ", embeddingVisual='" + embeddingVisual + '\'' +
                ", embeddingUserDescription='" + embeddingUserDescription + '\'' +
-               ", indexingTime='" + indexingTime + '\'' +
+               ", indexingTime=" + indexingTime +
+               ", ner='" + ner + '\'' +
                '}';
     }
 }
