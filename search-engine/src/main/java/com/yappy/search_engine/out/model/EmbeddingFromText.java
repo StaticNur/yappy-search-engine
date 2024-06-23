@@ -1,4 +1,4 @@
-package com.yappy.search_engine.out.model.response;
+package com.yappy.search_engine.out.model;
 
 import java.util.Arrays;
 

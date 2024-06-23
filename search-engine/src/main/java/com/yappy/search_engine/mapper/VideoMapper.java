@@ -45,9 +45,9 @@ public class VideoMapper {
         return videoDto;
     }
 
-    public static List<VideoResponse> buildVideoResponse(List<Video> videos){
+    public static List<VideoResponse> buildVideoResponse(List<Video> videos) {
         List<VideoResponse> videosResponse = new ArrayList<>();
-        for (Video video: videos){
+        for (Video video : videos) {
             videosResponse.add(new VideoResponse(
                     video.getUuid(),
                     video.getUrl(),
@@ -68,7 +68,7 @@ public class VideoMapper {
         return videosResponse;
     }
 
-    public Video buildVideoFromMediaContent(MediaContent mediaContent)  {
+    public Video buildVideoFromMediaContent(MediaContent mediaContent) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         String formattedDate = (mediaContent.getCreated()).format(formatter);
         Integer popularity = mediaContent.getPopularity();
@@ -76,15 +76,15 @@ public class VideoMapper {
             popularity = 0;
         }
         double[] embeddingAudio = convertToDoubleArray(mediaContent.getEmbeddingAudio());
-        if(embeddingAudio.length < 10){
+        if (embeddingAudio.length < 10) {
             embeddingAudio = EMPTY_VECTOR;
         }
         double[] embeddingVisual = convertToDoubleArray(mediaContent.getEmbeddingVisual());
-        if(embeddingVisual.length < 10){
+        if (embeddingVisual.length < 10) {
             embeddingVisual = EMPTY_VECTOR;
         }
         double[] embeddingUserDescription = convertToDoubleArray(mediaContent.getEmbeddingUserDescription());
-        if(embeddingUserDescription.length < 10){
+        if (embeddingUserDescription.length < 10) {
             embeddingUserDescription = EMPTY_VECTOR;
         }
 

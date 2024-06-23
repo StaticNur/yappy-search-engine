@@ -2,7 +2,6 @@ package com.yappy.search_engine.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Entity

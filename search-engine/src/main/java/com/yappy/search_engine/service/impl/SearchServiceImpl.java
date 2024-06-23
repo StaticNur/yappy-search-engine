@@ -115,14 +115,14 @@ public class SearchServiceImpl implements SearchService {
                 .fuzziness(Fuzziness.fromEdits(searchByParameterDto.getCoefficientOfCoincidenceAudio()))
                 .prefixLength(searchByParameterDto.getMinimumPrefixLengthAudio())
                 .maxExpansions(searchByParameterDto.getMaximumNumberOfMatchOptionsAudio())
-                .boost(searchByParameterDto.getBoostDescriptionUser()));
+                .boost(searchByParameterDto.getBoostTranscriptionAudio()));
 
         boolQueryBuilder.should(QueryBuilders
                 .matchQuery("descriptionVisual", searchByParameterDto.getQuery())
                 .fuzziness(Fuzziness.fromEdits(searchByParameterDto.getCoefficientOfCoincidenceVisual()))
                 .prefixLength(searchByParameterDto.getMinimumPrefixLengthVisual())
                 .maxExpansions(searchByParameterDto.getMaximumNumberOfMatchOptionsVisual())
-                .boost(searchByParameterDto.getBoostDescriptionUser()));
+                .boost(searchByParameterDto.getBoostDescriptionVisual()));
 
         String[] queryParts = searchByParameterDto.getQuery().split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
@@ -184,7 +184,6 @@ public class SearchServiceImpl implements SearchService {
                 .should(scriptScoreQueryBuilderAudio)
                 .should(scriptScoreQueryBuilderVisual);
 
-
         searchSourceBuilder.query(combinedQueryBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse;
@@ -200,11 +199,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public VideoSearchResult searchVideosByCombine(SearchByParameterDto embedding, int page, int size, String date) {
+    public VideoSearchResult searchVideosByCombine(SearchByParameterDto dto, int page, int size, String date) {
         SearchRequest searchRequest = new SearchRequest(Indices.VIDEOS_INDEX);
 
-        double[] embeddingQuery = apiClient.getEmbedding(embedding.getQuery());
-        System.out.println("Query text:" + embedding.toString());
+        double[] embeddingQuery = apiClient.getEmbedding(dto.getQuery());
+        System.out.println("Query text:" + dto.toString());
         System.out.println("Query embedding: [" + embeddingQuery[0] + "...] length=" + embeddingQuery.length);
 
         final int from = page <= 0 ? 0 : page * size;
@@ -215,48 +214,48 @@ public class SearchServiceImpl implements SearchService {
                 .postFilter(dateQuery);
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderUserDescription
-                = getScriptBuilder("embeddingUserDescription", embeddingQuery, embedding.getBoostDescriptionUser());
+                = getScriptBuilder("embeddingUserDescription", embeddingQuery, dto.getBoostDescriptionUser());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderAudio
-                = getScriptBuilder("embeddingAudio", embeddingQuery, embedding.getBoostEmbeddingAudio());
+                = getScriptBuilder("embeddingAudio", embeddingQuery, dto.getBoostEmbeddingAudio());
 
         ScriptScoreQueryBuilder scriptScoreQueryBuilderVisual
-                = getScriptBuilder("embeddingVisual", embeddingQuery, embedding.getBoostDescriptionVisual());
+                = getScriptBuilder("embeddingVisual", embeddingQuery, dto.getBoostDescriptionVisual());
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("descriptionUser", embedding.getQuery())
-                .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceDescriptionUser()))
-                .prefixLength(embedding.getMinimumPrefixLengthDescriptionUser())
-                .maxExpansions(embedding.getMaximumNumberOfMatchOptionsDescriptionUser())
-                .boost(embedding.getBoostDescriptionUser()));
+                .matchQuery("descriptionUser", dto.getQuery())
+                .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceDescriptionUser()))
+                .prefixLength(dto.getMinimumPrefixLengthDescriptionUser())
+                .maxExpansions(dto.getMaximumNumberOfMatchOptionsDescriptionUser())
+                .boost(dto.getBoostDescriptionUser()));
 
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("transcriptionAudio", embedding.getQuery())
-                .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceAudio()))
-                .prefixLength(embedding.getMinimumPrefixLengthAudio())
-                .maxExpansions(embedding.getMaximumNumberOfMatchOptionsAudio())
-                .boost(embedding.getBoostDescriptionUser()));
+                .matchQuery("transcriptionAudio", dto.getQuery())
+                .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceAudio()))
+                .prefixLength(dto.getMinimumPrefixLengthAudio())
+                .maxExpansions(dto.getMaximumNumberOfMatchOptionsAudio())
+                .boost(dto.getBoostTranscriptionAudio()));
 
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("descriptionVisual", embedding.getQuery())
-                .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceVisual()))
-                .prefixLength(embedding.getMinimumPrefixLengthVisual())
-                .maxExpansions(embedding.getMaximumNumberOfMatchOptionsVisual())
-                .boost(embedding.getBoostDescriptionUser()));
+                .matchQuery("descriptionVisual", dto.getQuery())
+                .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceVisual()))
+                .prefixLength(dto.getMinimumPrefixLengthVisual())
+                .maxExpansions(dto.getMaximumNumberOfMatchOptionsVisual())
+                .boost(dto.getBoostDescriptionVisual()));
 
-        String[] queryParts = embedding.getQuery().split(" ");
+        String[] queryParts = dto.getQuery().split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
                 tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part)
-                        .boost(embedding.getBoostTags()));
+                        .boost(dto.getBoostTags()));
             } else {
                 tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
-                        .fuzziness(Fuzziness.fromEdits(embedding.getCoefficientOfCoincidenceTag()))  // Установка коэффициента совпадения
-                        .prefixLength(embedding.getMaximumNumberOfMatchOptionsTag())                    // Минимальная длина префикса, которая должна быть неизменной
-                        .maxExpansions(embedding.getMaximumNumberOfMatchOptionsTag()));                // Максимальное количество вариантов совпадения
+                        .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceTag()))  // Установка коэффициента совпадения
+                        .prefixLength(dto.getMaximumNumberOfMatchOptionsTag())                    // Минимальная длина префикса, которая должна быть неизменной
+                        .maxExpansions(dto.getMaximumNumberOfMatchOptionsTag()));                // Максимальное количество вариантов совпадения
             }
         }
 
@@ -266,7 +265,6 @@ public class SearchServiceImpl implements SearchService {
                 .should(scriptScoreQueryBuilderVisual)
                 .should(boolQueryBuilder)
                 .should(tagsQueryBuilder);
-
 
         searchSourceBuilder.query(combinedQueryBuilder);
         searchRequest.source(searchSourceBuilder);
@@ -369,7 +367,6 @@ public class SearchServiceImpl implements SearchService {
         ).boost(boost);
     }
 
-    //TODO какие знаки можно не убирать?
     private String normalizeQuery(String query) {
         query = query.replaceAll("[,;!&$?№~@%^*+:<>=]", "")
                 .replaceAll("[-._]", " ")

@@ -34,7 +34,7 @@ public class MediaContentServiceImpl implements MediaContentService {
     }
 
     @Override
-    public List<MediaContent> getAllVideo(){
+    public List<MediaContent> getAllVideo() {
         return mediaContentRepository.findAll();
     }
 
@@ -147,6 +147,7 @@ public class MediaContentServiceImpl implements MediaContentService {
             executor.shutdownNow();
         }
     }
+
     @Override
     @Transactional
     public void updateAllUserDescriptionEmbedding(List<Embedding> embeddings) {

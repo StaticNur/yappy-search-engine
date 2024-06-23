@@ -11,7 +11,8 @@ import java.util.Random;
 
 public final class SearchUtil {
 
-    private SearchUtil() {}
+    private SearchUtil() {
+    }
 
     public static SearchRequest buildSearchRecommendationRequest(final String indexName) {
         try {

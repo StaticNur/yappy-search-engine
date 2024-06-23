@@ -7,9 +7,8 @@ import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.mapper.MediaContentMapper;
 import com.yappy.search_engine.mapper.VideoMapper;
 import com.yappy.search_engine.model.MediaContent;
-import com.yappy.search_engine.out.model.response.EmbeddingFromText;
-import com.yappy.search_engine.out.model.response.TranscribedAudioResponse;
-import com.yappy.search_engine.out.model.response.VisualDescription;
+import com.yappy.search_engine.out.model.TranscribedAudioResponse;
+import com.yappy.search_engine.out.model.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.IndexingService;
@@ -103,7 +102,7 @@ public class IndexingServiceImpl implements IndexingService {
             BulkRequest bulkRequest = prepareBulkRequest(batch);
             executeBulkRequest(bulkRequest);
             fromIndex += batchSize;
-            System.out.println("Проиндексировано "+fromIndex+" из БД в ElasticSearch");
+            System.out.println("Проиндексировано " + fromIndex + " из БД в ElasticSearch");
         }
     }
 
@@ -213,7 +212,7 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
-    /*private void videoDataEnriched(MediaContent videoForPostgres) {
+    private void videoDataEnriched(MediaContent videoForPostgres) {
         String url = videoForPostgres.getUrl();
 
         // Создаем асинхронные задачи для каждого API вызова
@@ -231,23 +230,57 @@ public class IndexingServiceImpl implements IndexingService {
             VisualDescription visualDescription = visualDescriptionFuture.get();
             videoForPostgres.setDescriptionVisual(visualDescription.getResult());
 
-            CompletableFuture<String> embeddingAudioFuture = CompletableFuture.supplyAsync(
-                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
-            CompletableFuture<String> embeddingVisualFuture = CompletableFuture.supplyAsync(
-                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
-            CompletableFuture<String> embeddingUserDescriptionFuture = CompletableFuture.supplyAsync(
-                    () -> apiClient.getEmbeddingFromTranscription(transcriptionAudio.getText()));
 
-            String empty = "[0.0]";
-            videoForPostgres.setEmbeddingAudio(empty);
-            videoForPostgres.setEmbeddingVisual(empty);
-            videoForPostgres.setEmbeddingUserDescription(empty);
+
+            // Создаем асинхронные задачи для получения эмбеддингов
+            CompletableFuture<double[]> embeddingAudioFuture = CompletableFuture.supplyAsync(
+                    () -> {
+                        String resultAudio = transcriptionAudio.getText();
+                        if (resultAudio != null && !resultAudio.isBlank()) {
+                            return apiClient.getEmbedding(resultAudio);
+                        } else {
+                            return EMPTY_VECTOR;
+                        }
+                    });
+
+            CompletableFuture<double[]> embeddingVisualFuture = CompletableFuture.supplyAsync(
+                    () -> {
+                        String resultVisual = visualDescription.getResult();
+                        if (resultVisual != null && !resultVisual.isBlank()) {
+                            return apiClient.getEmbedding(resultVisual);
+                        } else {
+                            return EMPTY_VECTOR;
+                        }
+                    });
+
+            CompletableFuture<double[]> embeddingUserDescriptionFuture = CompletableFuture.supplyAsync(
+                    () -> {
+                        String userAllDescription = videoForPostgres.getTitle()
+                                                    + " " + videoForPostgres.getDescriptionUser()
+                                                    + " " + videoForPostgres.getTags();
+                        userAllDescription = userAllDescription.replaceAll("null", "").trim();
+                        if (!userAllDescription.isBlank()) {
+                            return apiClient.getEmbedding(userAllDescription);
+                        } else {
+                            return EMPTY_VECTOR;
+                        }
+                    });
+
+            // Обработка результатов после выполнения задач
+            double[] embeddingAudio = embeddingAudioFuture.get();
+            videoForPostgres.setEmbeddingAudio(Arrays.toString(embeddingAudio));
+
+            double[] embeddingVisual = embeddingVisualFuture.get();
+            videoForPostgres.setEmbeddingVisual(Arrays.toString(embeddingVisual));
+
+            double[] embeddingUserDescription = embeddingUserDescriptionFuture.get();
+            videoForPostgres.setEmbeddingUserDescription(Arrays.toString(embeddingUserDescription));
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
-    }*/
+    }
 
-    private void videoDataEnriched(MediaContent videoForPostgres) {
+    /*private void videoDataEnriched(MediaContent videoForPostgres) {
         String url = videoForPostgres.getUrl();
         TranscribedAudioResponse transcriptionAudio = apiClient.getTranscription(url);
         videoForPostgres.setTranscriptionAudio(transcriptionAudio.getText());
@@ -258,14 +291,14 @@ public class IndexingServiceImpl implements IndexingService {
 
         String resultAudio = transcriptionAudio.getText();
         double[] embeddingAudio = EMPTY_VECTOR;
-        if(resultAudio != null && !resultAudio.isBlank()){
+        if (resultAudio != null && !resultAudio.isBlank()) {
             embeddingAudio = apiClient.getEmbedding(transcriptionAudio.getText());
         }
         videoForPostgres.setEmbeddingAudio(Arrays.toString(embeddingAudio));
 
         String resultVisual = visualDescription.getResult();
         double[] embeddingVisual = EMPTY_VECTOR;
-        if(resultVisual != null && !resultVisual.isBlank()){
+        if (resultVisual != null && !resultVisual.isBlank()) {
             embeddingVisual = apiClient.getEmbedding(visualDescription.getResult());
         }
         videoForPostgres.setEmbeddingVisual(Arrays.toString(embeddingVisual));
@@ -276,11 +309,11 @@ public class IndexingServiceImpl implements IndexingService {
                                     + " " + videoForPostgres.getTags();
         userAllDescription = userAllDescription.replaceAll("null", "");
         double[] embeddingUserDescription = EMPTY_VECTOR;
-        if(!userAllDescription.isBlank()){
+        if (!userAllDescription.isBlank()) {
             embeddingUserDescription = apiClient.getEmbedding(userAllDescription.trim());
         }
         videoForPostgres.setEmbeddingUserDescription(Arrays.toString(embeddingUserDescription));
-    }
+    }*/
 
     static {
         EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();

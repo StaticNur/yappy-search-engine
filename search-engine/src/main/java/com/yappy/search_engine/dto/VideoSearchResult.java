@@ -1,14 +1,13 @@
 package com.yappy.search_engine.dto;
 
-import com.yappy.search_engine.document.Video;
-
 import java.util.List;
 
 public class VideoSearchResult {
     private long totalHits;
     private List<VideoResponse> videos;
 
-    public VideoSearchResult(){}
+    public VideoSearchResult() {
+    }
 
     public VideoSearchResult(List<VideoResponse> videos, long totalHits) {
         this.videos = videos;

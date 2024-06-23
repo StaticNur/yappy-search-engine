@@ -26,7 +26,8 @@ public class SearchByParameterDto {
     private float boostEmbeddingVisual;
     private float boostEmbeddingUserDescription;
 
-    public SearchByParameterDto() {}
+    public SearchByParameterDto() {
+    }
 
     public SearchByParameterDto(String query, int coefficientOfCoincidenceDescriptionUser, int minimumPrefixLengthDescriptionUser, int maximumNumberOfMatchOptionsDescriptionUser, int coefficientOfCoincidenceAudio, int minimumPrefixLengthAudio, int maximumNumberOfMatchOptionsAudio, int coefficientOfCoincidenceVisual, int minimumPrefixLengthVisual, int maximumNumberOfMatchOptionsVisual, int coefficientOfCoincidenceTag, int minimumPrefixLengthTag, int maximumNumberOfMatchOptionsTag, float boostDescriptionUser, float boostTranscriptionAudio, float boostDescriptionVisual, float boostTags, float boostEmbeddingAudio, float boostEmbeddingVisual, float boostEmbeddingUserDescription) {
         this.query = query;

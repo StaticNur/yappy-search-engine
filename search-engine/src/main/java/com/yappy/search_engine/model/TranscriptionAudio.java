@@ -4,8 +4,10 @@ public class TranscriptionAudio {
     private String url;
     private String transcription;
     private String language;
+
     public TranscriptionAudio() {
     }
+
     public TranscriptionAudio(String url, String transcription, String language) {
         this.url = url;
         this.transcription = transcription;

@@ -24,22 +24,4 @@ public class ReaderArchiveFile {
         }
         throw new FileNotFoundException("Файл не найден: " + fileName);
     }
-
-    /*public InputStream readArchiveFile(String filePath, String fileName) throws IOException {
-        Resource resource = new ClassPathResource(filePath);
-        ZipFile zipFile = new ZipFile(resource.getFile());
-        return processZipEntries(zipFile.entries(), fileName, zipFile);
-    }
-
-    private InputStream processZipEntries(Enumeration<? extends ZipEntry> entries,
-                                          String fileName, ZipFile zipFile) throws IOException {
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            if (entryName.equals(fileName)) {
-                return zipFile.getInputStream(zipFile.getEntry(entryName));
-            }
-        }
-        throw new FileNotFoundException("Файл не найден: " + fileName);
-    }*/
 }

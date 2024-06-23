@@ -1,4 +1,4 @@
-package com.yappy.search_engine.out.model.response;
+package com.yappy.search_engine.out.model;
 
 public class VisualDescription {
     private String result;

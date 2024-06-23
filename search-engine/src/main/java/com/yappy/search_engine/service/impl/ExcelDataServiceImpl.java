@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Service
 public class ExcelDataServiceImpl implements ImportExcelService {
-    public static final String PATH_FILE_WITH_VIDEO = "датасет-видео-тег.xlsx";//src/main/resources/датасет-видео-тег.xlsx
+    public static final String PATH_FILE_WITH_VIDEO = "датасет-видео-тег.xlsx";
     public static final String PATH_FILE_WITH_AUDIO_4_10000_EMBEDDING = "Mclip_transcription_embedding_3000-4000_2.xlsx";
     public static final String PATH_FILE_WITH_AUDIO_1_10000_EMBEDDING = "Mclip_from_audio_0-11000.xlsx";
     public static final String PATH_FILE_WITH_AUDIO_CLASSIFICATION_1_10000_EMBEDDING = "new_data_embeddings_ones.xlsx";
@@ -47,7 +47,7 @@ public class ExcelDataServiceImpl implements ImportExcelService {
         try {
             Resource resource = new ClassPathResource(PATH_FILE_WITH_VIDEO);
             if (resource.exists()) {
-                try(InputStream inputStream = resource.getInputStream()) {
+                try (InputStream inputStream = resource.getInputStream()) {
                     videoFromExcels = excelParser.parseMainExcelFile(inputStream);
                     Map<String, Integer> tagFrequency = tagFrequencyCalculationService.getMapTag(videoFromExcels);
                     List<MediaContent> mediaContents = excelDataMapper.buildMediaContentFromVideo(videoFromExcels, tagFrequency);
@@ -107,11 +107,11 @@ public class ExcelDataServiceImpl implements ImportExcelService {
         List<Embedding> embeddings;
         Resource resource = new ClassPathResource(fileName);
         if (resource.exists()) {
-            try(InputStream inputStream = resource.getInputStream()) {
+            try (InputStream inputStream = resource.getInputStream()) {
                 embeddings = excelParser.parseEmbeddingExcelFile(inputStream, removeBrackets);
-                if (isUserDescription){
+                if (isUserDescription) {
                     mediaContentService.updateAllUserDescriptionEmbedding(embeddings);
-                }else {
+                } else {
                     mediaContentService.updateAllTranscriptionsEmbedding(embeddings);
                 }
             }
@@ -125,7 +125,7 @@ public class ExcelDataServiceImpl implements ImportExcelService {
         List<Embedding> embeddings;
         Resource resource = new ClassPathResource(fileName);
         if (resource.exists()) {
-            try(InputStream inputStream = resource.getInputStream()) {
+            try (InputStream inputStream = resource.getInputStream()) {
                 embeddings = excelParser.parseEmbeddingExcelFile(inputStream, removeBrackets);
                 mediaContentService.updateAllVideoEmbedding(embeddings);
             }

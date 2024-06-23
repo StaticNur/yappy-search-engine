@@ -118,6 +118,13 @@ function showFilterForm() {
 function hideFilterForm() {
     document.getElementById('filterFormOverlay').style.display = 'none';
 }
+/*Информация о бд*/
+function showDbInfo() {
+    document.getElementById('infoDbOverlay').style.display = 'block';
+}
+function hideDbInfo() {
+    document.getElementById('infoDbOverlay').style.display = 'none';
+}
 
 /*Поиск*/
 document.getElementById('queryText').addEventListener('click', function() {

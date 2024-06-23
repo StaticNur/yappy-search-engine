@@ -19,26 +19,6 @@ import java.util.List;
 @Component
 public class ExcelParser {
 
-    /*public static void main(String[] args) {
-        List<Embedding> embeddingAudios;
-        try {
-            Resource resource = new ClassPathResource("Mclip_tags_11000.xlsx");
-            if (resource.exists()) {
-                try(InputStream inputStream = resource.getInputStream()) {
-                    ExcelParser excelParser = new ExcelParser();
-                    embeddingAudios = excelParser.parseEmbeddingExcelFile(inputStream, true);
-                    for (int i=0;i<10;i++){
-                        System.out.println(embeddingAudios.get(i));
-                    }
-                }
-            } else {
-                throw new FileNotFoundException("Файл не найден: ");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
     public List<VideoFromExcel> parseMainExcelFile(InputStream inputStream) throws IOException {
         List<VideoFromExcel> videoEntries = new ArrayList<>();
         Workbook workbook = new XSSFWorkbook(inputStream);
@@ -89,7 +69,7 @@ public class ExcelParser {
             String transcription = getCellValueAsString(transcriptionCell);
             String embedding = getCellValueAsString(embeddingCell);
             String modifiedString = embedding;
-            if(removeBrackets){
+            if (removeBrackets) {
                 modifiedString = embedding.trim().substring(1, embedding.length() - 1);
             }
             videoEntries.add(new Embedding(url.trim(), transcription.trim(), modifiedString));

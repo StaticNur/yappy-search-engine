@@ -32,8 +32,8 @@ public class SearchController {
 
     @PostMapping("/search")
     public VideoSearchResult searchWithFilter(@RequestParam(defaultValue = "1971-01-01")
-                                                @DateTimeFormat(pattern = "yyyy-MM-dd")
-                                                Date date,
+                                              @DateTimeFormat(pattern = "yyyy-MM-dd")
+                                              Date date,
                                               @RequestBody SearchRequestDto dto) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         String formattedDate = formatter.format(date);
@@ -43,6 +43,7 @@ public class SearchController {
 
     /**
      * This is the end point for inspectors
+     *
      * @param text search text
      * @param page the page number for pagination of search results.
      * @param size the number of results per page. The default value is 15.
@@ -51,8 +52,8 @@ public class SearchController {
     @GetMapping("/search")
     @Operation(summary = "Smart search. Это для проверяющих.")
     public VideoSearchResult searchVideo(@RequestParam String text,
-                                                      @RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "15") int size) {
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "15") int size) {
         SearchByParameterDto searchByParameterDto = new SearchByParameterDto(text.trim(),
                 1,
                 1,
@@ -78,7 +79,7 @@ public class SearchController {
 
     @PostMapping("/search/full-text")
     public VideoSearchResult searchVideoFullText(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "15") int size,
+                                                 @RequestParam(defaultValue = "15") int size,
                                                  @RequestBody SearchByParameterDto searchByParameterDto) {
         return searchService.searchVideoFullText(searchByParameterDto, page, size);
     }
@@ -92,8 +93,8 @@ public class SearchController {
 
     @PostMapping("/search/combine")
     public VideoSearchResult searchByCombine(@RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "15") int size,
-                                               @RequestBody SearchByParameterDto searchByParameterDto) {
+                                             @RequestParam(defaultValue = "15") int size,
+                                             @RequestBody SearchByParameterDto searchByParameterDto) {
         return searchService.searchVideosByCombine(searchByParameterDto, page, size, "1971-01-01T01:01:01.001");
     }
 
@@ -103,6 +104,7 @@ public class SearchController {
                                      @RequestParam String query) {
         return suggestionService.getAutocomplete(query, page, size);
     }
+
     @GetMapping("/indexing-time")
     public String indexingTime(@RequestParam String uuid) {
         return mediaContentService.getIndexingTime(uuid);

@@ -27,12 +27,16 @@
             <ul id="suggestions-list"></ul>
         </div>
 
-        <div style="margin-right:10%" class="d-flex">
+        <div style="margin-right:7%" class="d-flex">
             <button class="btn btn-outline-secondary" type="button" id="btnSearch"
-                    style="margin-right:10%; margin-left:10%">Поиск
+                    style="margin-right:8%; margin-left:8%">Поиск
             </button>
             <button class="btn btn-outline-secondary" type="button" onclick="showFilterForm()">
                 <img src="https://cdn-icons-png.flaticon.com/128/4398/4398577.png" alt="Icon" height="25px"></button>
+            <button class="btn btn-outline-secondary" type="button" onclick="showDbInfo()"
+                    style="font-size:10px; margin-left:8%; padding:0px 5px">
+                <img src="https://cdn.icon-icons.com/icons2/1494/PNG/64/database_102857.png" alt="Icon" height="20px">инфо.БД
+            </button>
         </div>
         <button type="button" class="btnSave" onclick="showSaveForm()">
             <span class="plusWithText">+Загрузить</span>
@@ -112,6 +116,27 @@
         </button>
     </div>
 </div>
+<div id="infoDbOverlay" class="overlay">
+    <div class="form">
+        <h2>Информация о базе данных</h2>
+        <br>
+        <p style="font-weight:bold; color: #5d9782">Количество видео в бд: <span style="color:black">400360</span></p>
+        <p style="font-weight:bold; color: #5d9782">Видео c пользовательским описанием: <span
+                style="color:black">345091</span></p>
+        <p style="font-weight:bold; color: #5d9782">Видео c транскрибацией: <span style="color:black">124900</span></p>
+        <p style="font-weight:bold; color: #5d9782">Видео c транскрибацией высокого качество: <span style="color:black">20000</span>
+        </p>
+        <p style="font-weight:bold; color: #5d9782">Видео c аудио эмбедингом: <span style="color:black">20960</span></p>
+        <p style="font-weight:bold; color: #5d9782">Видео c визуал эмбедингом: <span style="color:black">10712</span>
+        </p>
+        <p style="font-weight:bold; color: #5d9782">Эмбединг по пользовательскому описанию: <span style="color:black">11011</span>
+        </p>
+        <button class="btn btn-outline-secondary" type="button" name="close" onclick="hideDbInfo()"
+                style="margin-top:10px">
+            Закрыть
+        </button>
+    </div>
+</div>
 
 <div class="container" style="margin-top: 90px;">
     <p style="margin-left: 20px; color:#c10303">ВЫ МОЖЕТЕ ИЗМЕНИТЬ ПАРАМЕТРЫ, НАЖАВ НА КНОПКУ РЯДОМ С ПОИСКОМ</p>
@@ -139,14 +164,17 @@
         <div class="avatar-container">
             <img src="https://cdn-icons-png.flaticon.com/128/149/149071.png" alt="Icon" height="60px">
             <div class="bottom-icons">
-                <img src="https://img.icons8.com/?size=80&id=qKOUyChoiEeu&format=png" title="Частота использования хэштег, чем выше этот показатель тем популярнее видео" alt="Icon" height="35px" id="likeButton">
+                <img src="https://img.icons8.com/?size=80&id=qKOUyChoiEeu&format=png"
+                     title="Частота использования хэштег, чем выше этот показатель тем популярнее видео" alt="Icon"
+                     height="35px" id="likeButton">
                 <p class="countLike" id="tagFrequency">0</p>
             </div>
         </div>
         <div class="comment-container">
             <div class="description">
                 <h1 id="author">@author_01</h1>
-                <p id="info" style="width:270px;word-wrap: break-word;">Винчестер ван лав😂 какая у него там цитата была: «Аниме - это искусство!»?!</p>
+                <p id="info" style="width:270px;word-wrap: break-word;">Винчестер ван лав😂 какая у него там цитата была:
+                    «Аниме - это искусство!»?!</p>
                 <p id="tags" style="color: blue; width:270px;word-wrap: break-word;">#аниме #манга #anime</p>
                 <p id="date">Дата публикации: 2024-06-07 20:05:29</p>
             </div>
@@ -188,7 +216,8 @@
 
 <footer class="mt-auto bg-light">
     <div class="container" style="margin-top: 60px;">
-        <div class="row justify-content-center align-items-center text-center" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="row justify-content-center align-items-center text-center"
+             style="padding-top: 40px; padding-bottom: 40px;">
             <div class="col-md-2 mb-2 mb-md-0">
                 <div class="logo">
                     <a href="http://192.144.12.231:8080" class="header__logo">
@@ -200,33 +229,33 @@
                 <div class="contacts text-center">
                     <h4>Контакты команды Ezee</h4>
                     <ul class="list-unstyled text-left">
-                            <li class="d-flex align-items-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                     style="height:20px; margin-right:5px">
-                                <a href="https://t.me/bytebuddy">Бадма - Backend, DevOps</a>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                     style="height:20px; margin-right:5px">
-                                <a href="https://t.me/rrretry">Вадим - Data Scientist, Backend</a>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                     style="height:20px; margin-right:5px">
-                                <a href="https://t.me/Tatyana_ZhV">Татьяна - Data Scientist</a>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                     style="height:20px; margin-right:5px">
-                                <a href="https://t.me/Alexander_E_S">Александр - Team lead</a>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
-                                     style="height:20px; margin-right:5px">
-                                <a href="https://t.me/orifov_nur">Мухаммаднур - Full-stack</a>
-                            </li>
+                        <li class="d-flex align-items-center">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                 style="height:20px; margin-right:5px">
+                            <a href="https://t.me/bytebuddy">Бадма - Backend, DevOps</a>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                 style="height:20px; margin-right:5px">
+                            <a href="https://t.me/rrretry">Вадим - Data Scientist, Backend</a>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                 style="height:20px; margin-right:5px">
+                            <a href="https://t.me/Tatyana_ZhV">Татьяна - Data Scientist</a>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                 style="height:20px; margin-right:5px">
+                            <a href="https://t.me/Alexander_E_S">Александр - Team lead</a>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
+                                 style="height:20px; margin-right:5px">
+                            <a href="https://t.me/orifov_nur">Мухаммаднур - Full-stack</a>
+                        </li>
 
-                        </ul>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-4">

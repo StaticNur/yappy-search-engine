@@ -1,7 +1,5 @@
 package com.yappy.search_engine.config;
 
-import com.yappy.search_engine.out.service.impl.ExternalApiClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;

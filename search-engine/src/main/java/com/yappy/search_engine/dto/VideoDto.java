@@ -1,6 +1,6 @@
 package com.yappy.search_engine.dto;
 
-public class VideoDto{
+public class VideoDto {
     private String url;
     private String title;
     private String description;

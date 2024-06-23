@@ -3,9 +3,7 @@ package com.yappy.search_engine.mapper;
 import com.yappy.search_engine.document.Video;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 public class SearchHitMapper {
