@@ -5,7 +5,7 @@ import com.yappy.search_engine.dto.SearchRequestDto;
 import com.yappy.search_engine.dto.VideoSearchResult;
 
 public interface SearchService {
-    VideoSearchResult searchVideosByCombine(SearchByParameterDto embedding, int page, int size);
+    VideoSearchResult searchVideosByCombine(SearchByParameterDto embedding, int page, int size, String date);
 
     VideoSearchResult searchVideosByEmbedding(SearchByParameterDto embedding, int page, int size);
 

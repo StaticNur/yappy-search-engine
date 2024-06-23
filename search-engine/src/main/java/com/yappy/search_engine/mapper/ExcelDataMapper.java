@@ -12,17 +12,6 @@ import java.util.regex.Pattern;
 @Component
 public class ExcelDataMapper {
 
-    /*StringBuilder descriptionUser = new StringBuilder();
-        StringBuilder tagsBuilder = new StringBuilder();
-        String[] parts = videoFromExcel.getDescription().split("\\s+");
-        for (String part : parts) {
-            if (part.startsWith("#")) {
-                tagsBuilder.append(part).append(" ");
-            } else {
-                descriptionUser.append(" ").append(part);
-            }
-        }*/
-
     public List<MediaContent> buildMediaContentFromVideo(List<VideoFromExcel> videoFromExcels,
                                                          Map<String, Integer> tagFrequency) {
         List<MediaContent> mediaContents = new ArrayList<>();

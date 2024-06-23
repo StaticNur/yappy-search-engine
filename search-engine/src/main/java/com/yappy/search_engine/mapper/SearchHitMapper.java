@@ -40,24 +40,13 @@ public class SearchHitMapper {
         return (value != null) ? value.toString() : defaultValue;
     }
 
-    private Double[] convertToDoubleArray(Object obj) {
-        if (obj instanceof List<?>) {
-            List<?> list = (List<?>) obj;
-            return list.stream()
-                    .filter(e -> e instanceof Number)
-                    .map(e -> ((Number) e).doubleValue())
-                    .toArray(Double[]::new);
-        }
-        return new Double[0];
-    }
-
     private double[] convertToFloatArray(String input) {
         input = input.replaceAll("[\\[\\]]", "");
         String[] parts = input.split(",");
         double[] result = new double[parts.length];
         for (int i = 0; i < parts.length; i++) {
             if (parts[i] == null || parts[i].isEmpty()) {
-                result[i] = 0.0f;
+                result[i] = 1.0f;
             } else {
                 result[i] = Double.parseDouble(parts[i].trim());
             }

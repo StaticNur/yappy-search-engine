@@ -58,7 +58,7 @@ function saveNewVideo() {
 
     if (url) {
         const startTime = performance.now();
-        fetch(`http://${host}:8080/index`, {
+        fetch(`http://${host}:8080/index-my`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -167,13 +167,13 @@ document.getElementById('btnSearch').addEventListener('click', function (event) 
 
 function sendSearchRequest() {
     showLoadingSearch();
-    const queryText = document.getElementById('queryText').value;
+    var queryText = document.getElementById('queryText').value;
     const suggestionsList = document.getElementById('suggestions-list');
     suggestionsList.style.display = 'none';
 
-    console.log(`Запрос: ${queryText}`);  // Логирование запроса
     const startTime = performance.now();
     try {
+        const logIn = document.getElementById('logIn').value;
         const typeSearch = document.getElementById('typeSearch').value;
         const dateFilter = document.getElementById('dateFilter').value;
         const sort = document.getElementById('sort').value;
@@ -198,7 +198,12 @@ function sendSearchRequest() {
                 break;
         }
         let date = getDate(dateFilter);
-
+        if(logIn === 'bicyclist'){
+            queryText = queryText + ' велосипедист';
+        }else if(logIn ==='historian'){
+            queryText = queryText + ' историк, средневековье';
+        }
+        console.log(`Запрос: ${queryText}`);  // Логирование запроса
         const searchRequestDto = {
             typeSearch: typeSearch,
             query: queryText,
@@ -544,24 +549,27 @@ function showMessage(startTime, type, message) {
     }
 }
 function saveFilter() {
+    const logIn = document.getElementById("logIn");
+    const logInType = logIn.options[logIn.selectedIndex];
+    const logInInfo = document.getElementById("logInInfo");
+    logInInfo.textContent = "Авторизованы как: " + logInType.text;
+    console.log("logIn.selectedIndex " + logIn.selectedIndex);
+
     const typeSearch = document.getElementById("typeSearch");
     const selectedOptionType = typeSearch.options[typeSearch.selectedIndex];
     const typeSearchInfo = document.getElementById("typeSearchInfo");
     typeSearchInfo.textContent = "Тип поиска: " + selectedOptionType.text;
-    typeSearchInfo.classList.add("text-info");
-    console.log("typeSearch.selectedIndex"+typeSearch.selectedIndex);
+    console.log("typeSearch.selectedIndex " + typeSearch.selectedIndex);
 
     const dateFilter = document.getElementById("dateFilter");
     const selectedOptionDate = dateFilter.options[dateFilter.selectedIndex];
     const dateFilterInfo = document.getElementById("dateFilterInfo");
     dateFilterInfo.textContent = "Фильтр по дате: " + selectedOptionDate.text;
-    dateFilterInfo.classList.add("text-info");
 
     const sort = document.getElementById("sort");
     const selectedOptionSort = sort.options[sort.selectedIndex];
     const sortInfo = document.getElementById("sortInfo");
     sortInfo.textContent = "Сортировка: " + selectedOptionSort.text;
-    sortInfo.classList.add("text-info");
 
     hideFilterForm();
 }

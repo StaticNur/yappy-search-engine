@@ -2,8 +2,10 @@ package com.yappy.search_engine.controller;
 
 import com.yappy.search_engine.dto.Response;
 import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.service.IndexingService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,15 @@ public class IndexController {
     }
 
     @PostMapping("/index")
-    public ResponseEntity<MediaContent> index(@RequestBody VideoDto videoDto) {
+    @Operation(summary = "Indexing a new video. Это для проверяющих.")
+    public ResponseEntity<MediaContent> index(@RequestBody VideoDtoFromInspectors videoDto) {
+        MediaContent mediaContent = service.indexVideoForInspectors(videoDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mediaContent);
+    }
+
+    @PostMapping("/index-my")
+    public ResponseEntity<MediaContent> indexMy(@RequestBody VideoDto videoDto) {
         MediaContent mediaContent = service.indexVideo(videoDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(mediaContent);

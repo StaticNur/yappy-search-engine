@@ -6,6 +6,7 @@ import com.yappy.search_engine.dto.VideoSearchResult;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.SearchService;
 import com.yappy.search_engine.service.SuggestionService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -42,16 +43,37 @@ public class SearchController {
 
     /**
      * This is the end point for inspectors
-     * @param query
-     * @param page
-     * @param size
+     * @param text search text
+     * @param page the page number for pagination of search results.
+     * @param size the number of results per page. The default value is 15.
      * @return all results
      */
-    @GetMapping("/search/text")
-    public VideoSearchResult searchVideoText(@RequestParam String query,
+    @GetMapping("/search")
+    @Operation(summary = "Smart search. Это для проверяющих.")
+    public VideoSearchResult searchVideo(@RequestParam String text,
                                                       @RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "15") int size) {
-        return searchService.searchVideoText(query.trim(), page, size);
+        SearchByParameterDto searchByParameterDto = new SearchByParameterDto(text.trim(),
+                1,
+                1,
+                50,
+                0,
+                2,
+                50,
+                0,
+                2,
+                50,
+                1,
+                2,
+                50,
+                1,
+                0,
+                1,
+                1,
+                2,
+                10,
+                4);
+        return searchService.searchVideosByCombine(searchByParameterDto, page, size, "1971-01-01T01:01:01.001"); //за все время
     }
 
     @PostMapping("/search/full-text")
@@ -72,13 +94,8 @@ public class SearchController {
     public VideoSearchResult searchByCombine(@RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "15") int size,
                                                @RequestBody SearchByParameterDto searchByParameterDto) {
-        return searchService.searchVideosByCombine(searchByParameterDto, page, size);
+        return searchService.searchVideosByCombine(searchByParameterDto, page, size, "1971-01-01T01:01:01.001");
     }
-
-
-
-
-
 
     @GetMapping("/search/autocomplete")
     public List<String> autocomplete(@RequestParam(defaultValue = "0") int page,

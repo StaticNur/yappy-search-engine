@@ -3,6 +3,7 @@ package com.yappy.search_engine.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.mapper.MediaContentMapper;
 import com.yappy.search_engine.mapper.VideoMapper;
 import com.yappy.search_engine.model.MediaContent;
@@ -126,6 +127,12 @@ public class IndexingServiceImpl implements IndexingService {
             fromIndex += batchSize;
         }
         System.out.println("Size suggestions: " + suggestionsList.size());
+    }
+
+    @Override
+    public MediaContent indexVideoForInspectors(VideoDtoFromInspectors videoDto) {
+        VideoDto video = videoMapper.buildVideoFromInspectorsDto(videoDto);
+        return indexVideo(video);
     }
 
     private BulkRequest prepareBulkRequestAutocomplete(List<String> allSuggestions) {
@@ -267,7 +274,7 @@ public class IndexingServiceImpl implements IndexingService {
         String userAllDescription = videoForPostgres.getTitle()
                                     + " " + videoForPostgres.getDescriptionUser()
                                     + " " + videoForPostgres.getTags();
-
+        userAllDescription = userAllDescription.replaceAll("null", "");
         double[] embeddingUserDescription = EMPTY_VECTOR;
         if(!userAllDescription.isBlank()){
             embeddingUserDescription = apiClient.getEmbedding(userAllDescription.trim());

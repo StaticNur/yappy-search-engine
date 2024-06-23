@@ -9,5 +9,5 @@ public interface ImportExcelService {
 
     void importUserDescriptionEmbedding();
 
-    void createEmbeddingDataEmbedding();
+    void importAudioClassificationEmbedding();
 }

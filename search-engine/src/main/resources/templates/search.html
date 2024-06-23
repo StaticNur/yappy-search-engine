@@ -15,10 +15,10 @@
 <div class="fixed-top-container">
     <div class="d-flex justify-content-start align-items-center centered-container mb-3"
          style="margin-top: 20px; margin-right: 10px; margin-left: 10px;">
-        <a href="https://i.moscow/" target="_blank" style="margin-right:2%; margin-left:2%">
+        <a href="http://192.144.12.231:8080" target="_blank" style="margin-right:2%; margin-left:2%">
             <img class="moscowLog" src="https://i.moscow/build/img/new/logo.svg" alt="Logo" height="25px">
         </a>
-        <a href="https://yappy.media/" target="_blank" style="margin-right:2%">
+        <a href="http://192.144.12.231:8080" target="_blank" style="margin-right:2%">
             <img class="yappyLog" src="https://yappy.media/images/logo-full.svg" alt="Logo" height="25px">
         </a>
 
@@ -72,10 +72,18 @@
         <span class="closeButton" onclick="hideFilterForm()">×</span>
         <h2>Применить фильтр</h2>
 
+        <label class="form-check-label" for="logIn">Авторизоваться как:</label>
+        <select name="type" id="logIn" class="form-control">
+            <option value="anonymous" selected>Анонимный</option>
+            <option value="bicyclist">Велосипедист</option>
+            <option value="historian">Историк</option>
+        </select>
+        <br>
+
         <label class="form-check-label" for="typeSearch">Тип поиска:</label>
         <select name="type" id="typeSearch" class="form-control">
-            <option value="text" selected>Текстовый поиск</option>
-            <option value="embedding">Embedding поиск</option>
+            <option value="embedding" selected>Embedding поиск</option>
+            <option value="text">Текстовый поиск</option>
         </select>
         <p style="color:#9bc00e">Рекомендуется поиск по embedding</p>
 
@@ -106,7 +114,9 @@
 </div>
 
 <div class="container" style="margin-top: 90px;">
-    <p id="typeSearchInfo">Тип поиска: Текстовый поиск</p>
+    <p style="margin-left: 20px; color:#c10303">ВЫ МОЖЕТЕ ИЗМЕНИТЬ ПАРАМЕТРЫ, НАЖАВ НА КНОПКУ РЯДОМ С ПОИСКОМ</p>
+    <p id="logInInfo">Авторизованы как: Анонимный</p>
+    <p id="typeSearchInfo">Тип поиска: Embedding поиск</p>
     <p id="dateFilterInfo">Фильтр по дате: За все время</p>
     <p id="sortInfo">Сортировка: Не указано</p>
     <p id="process-time">Найдено: 0; Время: 0ms</p>
@@ -181,7 +191,7 @@
         <div class="row justify-content-center align-items-center text-center" style="padding-top: 40px; padding-bottom: 40px;">
             <div class="col-md-2 mb-2 mb-md-0">
                 <div class="logo">
-                    <a href="search.html" class="header__logo">
+                    <a href="http://192.144.12.231:8080" class="header__logo">
                         <img src="/static/лцт-хакатон.png" alt="Логотип" class="img-fluid">
                     </a>
                 </div>
@@ -193,12 +203,12 @@
                             <li class="d-flex align-items-center">
                                 <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
                                      style="height:20px; margin-right:5px">
-                                <a href="https://t.me/bytebuddy">Бадма - Backend</a>
+                                <a href="https://t.me/bytebuddy">Бадма - Backend, DevOps</a>
                             </li>
                             <li class="d-flex align-items-center">
                                 <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"
                                      style="height:20px; margin-right:5px">
-                                <a href="https://t.me/rrretry">Вадим - Data Scientist/Backend</a>
+                                <a href="https://t.me/rrretry">Вадим - Data Scientist, Backend</a>
                             </li>
                             <li class="d-flex align-items-center">
                                 <img src="https://cdn-icons-png.flaticon.com/128/2111/2111646.png" alt="Телеграм"

@@ -31,7 +31,7 @@ sudo docker restart $(sudo docker ps -q)
 
 sudo docker logs postgres_db
 sudo docker logs odfe-node
-sudo docker logs search-engine
+sudo docker logs c8119d7a9293 search-engine
 
 sudo docker stop $(sudo docker ps -q)
 

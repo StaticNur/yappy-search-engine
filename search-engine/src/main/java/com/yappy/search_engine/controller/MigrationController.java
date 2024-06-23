@@ -44,6 +44,12 @@ public class MigrationController {
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
 
+    @PostMapping("/import/transcription-embedding-classification")
+    public ResponseEntity<Response> importAudioClassificationFromExcel() {
+        excelDataService.importAudioClassificationEmbedding();
+        return ResponseEntity.ok().body(new Response("Data imported successfully!"));
+    }
+
     @PostMapping("/import/video-embedding")
     public ResponseEntity<Response> importVideoFromExcel() {
         excelDataService.importVideoEmbedding();
@@ -55,10 +61,4 @@ public class MigrationController {
         excelDataService.importUserDescriptionEmbedding();
         return ResponseEntity.ok().body(new Response("Data imported successfully!"));
     }
-
-    /*@PostMapping("/create/embedding-from-description")
-    public ResponseEntity<Response> createEmbeddingFromExcel() {
-        excelDataService.createEmbeddingDataEmbedding();
-        return ResponseEntity.ok().body(new Response("Data created successfully!"));
-    }*/
 }

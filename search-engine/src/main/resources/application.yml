@@ -10,6 +10,8 @@ spring:
     enabled: true
     change-log: db.changelog/changelog.xml
     liquibase-schema: migration
+    parameters:
+      lockRetryCount: 5
 api:
   service:
     url:

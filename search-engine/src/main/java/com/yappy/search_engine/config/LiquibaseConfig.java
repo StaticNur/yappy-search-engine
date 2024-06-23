@@ -10,6 +10,8 @@ import javax.sql.DataSource;
 public class LiquibaseConfig {
     @Value("${spring.liquibase.change-log}")
     private String changeLogFile;
+    @Value("${spring.liquibase.liquibase-schema}")
+    private String liquibaseSchema;
 
     @Bean
     public SpringLiquibase liquibase(DataSource dataSource) {

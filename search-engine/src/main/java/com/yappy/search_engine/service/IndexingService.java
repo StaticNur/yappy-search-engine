@@ -1,6 +1,7 @@
 package com.yappy.search_engine.service;
 
 import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.model.MediaContent;
 
 public interface IndexingService {
@@ -8,4 +9,6 @@ public interface IndexingService {
     void indexAllVideoFromDb();
 
     void indexAutocompleteDataFromDbInEs();
+
+    MediaContent indexVideoForInspectors(VideoDtoFromInspectors videoDto);
 }

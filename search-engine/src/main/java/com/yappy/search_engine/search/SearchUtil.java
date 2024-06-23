@@ -81,25 +81,32 @@ public final class SearchUtil {
 
     private static BoolQueryBuilder getQueryBuilder(String query) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("descriptionUser", query)
+                .fuzziness(Fuzziness.AUTO)).boost(1);
+
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("transcriptionAudio", query)
+                .fuzziness(Fuzziness.AUTO));
+
+        boolQueryBuilder.should(QueryBuilders
+                .matchQuery("descriptionVisual", query)
+                .fuzziness(Fuzziness.AUTO));
 
         String[] queryParts = query.split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
-            System.out.println("tags:" + part);
             if (part.startsWith("#")) {
                 part = part.replace("#", "");
-                tagsQueryBuilder.should(QueryBuilders.termQuery("tags", part)
-                        .boost(2.0f));
+                tagsQueryBuilder.should(QueryBuilders.matchQuery("tags", part).boost(1));
             } else {
-                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part)
-                        .fuzziness(Fuzziness.AUTO));
+                tagsQueryBuilder.should(QueryBuilders.fuzzyQuery("tags", part).fuzziness(Fuzziness.AUTO));
             }
         }
-        boolQueryBuilder
-                .should(QueryBuilders.matchQuery("title", query).fuzziness(Fuzziness.AUTO))
-                .should(QueryBuilders.matchQuery("descriptionUser", query).fuzziness(Fuzziness.AUTO))
+
+        return QueryBuilders.boolQuery()
+                .should(boolQueryBuilder)
                 .should(tagsQueryBuilder);
-        return boolQueryBuilder;
     }
 
     private static QueryBuilder getQueryBuilder(final String field, final String date) {

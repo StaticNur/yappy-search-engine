@@ -1,6 +1,8 @@
 package com.yappy.search_engine.mapper;
 
 import com.yappy.search_engine.document.Video;
+import com.yappy.search_engine.dto.VideoDto;
+import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.dto.VideoResponse;
 import com.yappy.search_engine.model.MediaContent;
 import org.springframework.stereotype.Component;
@@ -8,11 +10,40 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class VideoMapper {
     private static final double[] EMPTY_VECTOR;
     private final static int EMBEDDING_LENGTH = 640;
+
+    public VideoDto buildVideoFromInspectorsDto(VideoDtoFromInspectors videoDtoFromInspectors) {
+        VideoDto videoDto = new VideoDto();
+        StringBuilder descriptionUser = new StringBuilder();
+        StringBuilder tagsBuilder = new StringBuilder();
+        Pattern tagPattern = Pattern.compile("#[\\wА-ЯЁа-яё]+", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = tagPattern.matcher(videoDtoFromInspectors.getDescription());
+        int lastIndex = 0;
+        while (matcher.find()) {
+            descriptionUser.append(videoDtoFromInspectors.getDescription(), lastIndex, matcher.start());
+            tagsBuilder.append(matcher.group()).append(" ");
+            lastIndex = matcher.end();
+        }
+        descriptionUser.append(videoDtoFromInspectors.getDescription().substring(lastIndex));
+
+        String text = descriptionUser.toString().trim();
+        if (text.matches("^(\\s*,\\s*)*$")) {// только запятые
+            text = "";
+        }
+        text = text.replaceAll("[\\s]+", " ");
+        String tags = tagsBuilder.toString().trim();
+
+        videoDto.setUrl(videoDtoFromInspectors.getLink());
+        videoDto.setDescription(text);
+        videoDto.setTags(tags);
+        return videoDto;
+    }
 
     public static List<VideoResponse> buildVideoResponse(List<Video> videos){
         List<VideoResponse> videosResponse = new ArrayList<>();
@@ -44,15 +75,15 @@ public class VideoMapper {
         if (popularity == null) {
             popularity = 0;
         }
-        double[] embeddingAudio = convertToFloatArray(mediaContent.getEmbeddingAudio());
+        double[] embeddingAudio = convertToDoubleArray(mediaContent.getEmbeddingAudio());
         if(embeddingAudio.length < 10){
             embeddingAudio = EMPTY_VECTOR;
         }
-        double[] embeddingVisual = convertToFloatArray(mediaContent.getEmbeddingVisual());
+        double[] embeddingVisual = convertToDoubleArray(mediaContent.getEmbeddingVisual());
         if(embeddingVisual.length < 10){
             embeddingVisual = EMPTY_VECTOR;
         }
-        double[] embeddingUserDescription = convertToFloatArray(mediaContent.getEmbeddingUserDescription());
+        double[] embeddingUserDescription = convertToDoubleArray(mediaContent.getEmbeddingUserDescription());
         if(embeddingUserDescription.length < 10){
             embeddingUserDescription = EMPTY_VECTOR;
         }
@@ -75,7 +106,7 @@ public class VideoMapper {
         );
     }
 
-    private double[] convertToFloatArray(String input) {
+    private double[] convertToDoubleArray(String input) {
         if (input == null || input.trim().isEmpty()) {
             return EMPTY_VECTOR;
         }
@@ -87,16 +118,6 @@ public class VideoMapper {
         }
         return result;
     }
-
-    /*private double[] convertToFloatArray(String input) {
-        input = input.replaceAll("[\\[\\]]", "");
-        String[] parts = input.split(",");
-        double[] result = new double[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            result[i] = Double.parseDouble(parts[i].trim());
-        }
-        return result;
-    }*/
 
     static {
         EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();
