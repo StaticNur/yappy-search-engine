@@ -11,4 +11,6 @@ public interface IndexingService {
     void indexAutocompleteDataFromDbInEs();
 
     MediaContent indexVideoForInspectors(VideoDtoFromInspectors videoDto);
+
+    void indexAutocompleteDataFromFile();
 }

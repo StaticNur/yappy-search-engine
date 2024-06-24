@@ -1,6 +1,6 @@
 {
   "settings": {
-    "index.max_ngram_diff": 18,
+    "index.max_ngram_diff": 5,
     "analysis": {
       "analyzer": {
         "ngram_analyzer": {
@@ -13,7 +13,7 @@
         "ngram_filter": {
           "type": "ngram",
           "min_gram": 2,
-          "max_gram": 20
+          "max_gram": 7
         }
       }
     }

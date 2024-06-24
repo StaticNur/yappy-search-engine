@@ -13,24 +13,35 @@ import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.IndexingService;
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.xcontent.XContentBuilder;
 import org.elasticsearch.xcontent.XContentFactory;
 import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 @Service
 public class IndexingServiceImpl implements IndexingService {
@@ -38,6 +49,7 @@ public class IndexingServiceImpl implements IndexingService {
     private final static String INDEX_VIDEO_NAME = "videos";
     private final static String INDEX_AUTOCOMPLETE_NAME = "suggestions";
     private final static String FIELD_AUTOCOMPLETE = "suggestion";
+    private final static String PATH_TO_FILE_AUTOCOMPLETE = "russian.txt";
     private static final double[] EMPTY_VECTOR;
     private final static int EMBEDDING_LENGTH = 640;
 
@@ -132,6 +144,33 @@ public class IndexingServiceImpl implements IndexingService {
     public MediaContent indexVideoForInspectors(VideoDtoFromInspectors videoDto) {
         VideoDto video = videoMapper.buildVideoFromInspectorsDto(videoDto);
         return indexVideo(video);
+    }
+
+    @Override
+    public void indexAutocompleteDataFromFile() {
+        Resource resource = new ClassPathResource(PATH_TO_FILE_AUTOCOMPLETE);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), "Windows-1251"))) {
+            List<String> requests = new ArrayList<>();
+            String line;
+            int batchSize = 0;
+            while ((line = reader.readLine()) != null) {
+                requests.add(line.trim());
+                if (requests.size() >= 10000) {
+                    BulkRequest bulkRequest = prepareBulkRequestAutocomplete(requests);
+                    executeBulkRequest(bulkRequest);
+                    batchSize += 10000;
+                    requests.clear();
+                    System.out.println("Проиндексировано " + batchSize + " из File в ElasticSearch");
+                }
+            }
+            if (!requests.isEmpty()) {
+                BulkRequest bulkRequest = prepareBulkRequestAutocomplete(requests);
+                executeBulkRequest(bulkRequest);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private BulkRequest prepareBulkRequestAutocomplete(List<String> allSuggestions) {

@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -36,7 +37,7 @@ public class SuggestionServiceImpl implements SuggestionService {
                 .size(size);
 
         MatchQueryBuilder matchQuery = QueryBuilders.matchQuery("suggestion", query)
-                .fuzziness("AUTO");
+                .fuzziness(Fuzziness.AUTO);
         searchSourceBuilder.query(matchQuery);
         searchRequest.source(searchSourceBuilder);
 

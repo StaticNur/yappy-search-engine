@@ -47,9 +47,16 @@ public class IndexController {
                 .body(new Response("Данные успешно загружены из PostgreSQL в ElasticSearch"));
     }
 
-    @PostMapping("/index/autocomplete")
+    @PostMapping("/index/autocomplete-db")
     public ResponseEntity<Response> indexationAutocompleteDataFromDbInEs() {
         service.indexAutocompleteDataFromDbInEs();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
+    }
+
+    @PostMapping("/index/autocomplete-file")
+    public ResponseEntity<Response> indexationAutocompleteDataFromFile() {
+        service.indexAutocompleteDataFromFile();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
     }
