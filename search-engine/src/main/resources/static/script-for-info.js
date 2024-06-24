@@ -1,4 +1,4 @@
-const host = "192.144.12.231";//localhost
+const host = "192.144.12.231";
 
 document.addEventListener('DOMContentLoaded', function () {
     const indexingTimeElement = document.getElementById('indexingTime');

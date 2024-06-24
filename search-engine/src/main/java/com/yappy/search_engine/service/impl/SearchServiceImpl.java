@@ -366,37 +366,7 @@ public class SearchServiceImpl implements SearchService {
                 new Script(scriptType, language, script, params)
         ).boost(boost);
     }
-    /*public Script getScript(String field, double[] embeddingQuery) {
-        ScriptType scriptType = ScriptType.INLINE;
-        String language = "painless";
-        Map<String, Object> params = Collections.singletonMap("queryVector", embeddingQuery);
 
-        String script = """
-                double cosineSimilarity(double[] vector1, double[] vector2) {
-                    double dotProduct = 0.0, norm1 = 0.0, norm2 = 0.0;
-                    for (int i = 0; i < vector1.length; i++) {
-                        dotProduct += vector1[i] * vector2[i];
-                        norm1 += Math.pow(vector1[i], 2);
-                        norm2 += Math.pow(vector2[i], 2);
-                    }
-                    return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
-                }
-
-                if (doc['%s'].size() == 0) {
-                    return 0.0;
-                } else {
-                    double[] docVector = doc['%s'].value;
-                    double score = cosineSimilarity(params.queryVector, docVector) + 1.0;
-                    if (Double.isNaN(score) || score < 0) {
-                        return 0.0;
-                    } else {
-                        return score;
-                    }
-                }
-                """.formatted(field, field);
-
-        return new Script(scriptType, language, script, params);
-    }*/
     private String normalizeQuery(String query) {
         query = query.replaceAll("[,;!&$?№~@%^*+:<>=]", "")
                 .replaceAll("[-._]", " ")

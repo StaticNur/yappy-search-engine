@@ -6,7 +6,7 @@ let mySavedVideosCurrentIndex = 0;
 
 var isMyVideo = false;
 
-const host = "192.144.12.231";//localhost
+const host = "192.144.12.231";
 
 document.addEventListener('DOMContentLoaded', function () {
     showLoadingSearch();
@@ -174,6 +174,7 @@ document.getElementById('btnSearch').addEventListener('click', function (event) 
 
 function sendSearchRequest() {
     showLoadingSearch();
+    var correction = correctionOfTypos();
     var queryText = document.getElementById('queryText').value;
     const suggestionsList = document.getElementById('suggestions-list');
     suggestionsList.style.display = 'none';
@@ -206,9 +207,21 @@ function sendSearchRequest() {
         }
         let date = getDate(dateFilter);
         if(logIn === 'bicyclist'){
-            queryText = queryText + ' велосипедист';
+            if(correction === ''){
+                queryText = queryText + ' велосипедист';
+            }else{
+                queryText = correction + ' велосипедист';
+            }
         }else if(logIn ==='historian'){
-            queryText = queryText + ' историк, средневековье';
+            if(correction === ''){
+                queryText = queryText + ' историк, средневековье';
+            }else{
+                queryText = correction + ' историк, средневековье';
+            }
+        }else{
+            if (correction !== '') {
+                queryText = correction;
+            }
         }
         console.log(`Запрос: ${queryText}`);  // Логирование запроса
         const searchRequestDto = {
@@ -257,6 +270,26 @@ function sendSearchRequest() {
         hideLoadingSearch();
         showMessage(startTime, 'error', 'Произошла ошибка при отправке формы');
     }
+}
+function correctionOfTypos(text) {
+    var inputField = document.getElementById('correctionOfTypos');
+    fetch(`http://${host}:8005/text_correction`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(text)
+    }).then(response => response.json())
+        .then(data => {
+        if (data) {
+            return data.result;
+        } else {
+            console.log(startTime, 'info', 'не исправлена опечатка');
+        }
+    }).catch(error => {
+        console.log(startTime, 'error', 'Ошибка исправления опечатка');
+    });
+    return '';
 }
 
 function getDate(dateFilter){

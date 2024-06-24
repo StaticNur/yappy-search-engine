@@ -65,15 +65,15 @@ public class SearchController {
                 2,
                 50,
                 1,
-                2,
+                3,
                 50,
-                1,
-                0,
-                1,
+                2,
                 1,
                 2,
-                10,
-                4);
+                1,
+                2,
+                1,
+                1);
         return searchService.searchVideosByCombine(searchByParameterDto, page, size, "1971-01-01T01:01:01.001"); //за все время
     }
 
