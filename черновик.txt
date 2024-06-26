@@ -2,6 +2,7 @@
 ssh -i C:\Users\ZenBook/.ssh/cloudru_rsa user1@192.144.12.231
 
 cd yappy-search-engine/search-engine
+cd textcorrection/text-correction
 
 sudo rm -rf elasticsearch_data pg_data
 
@@ -38,6 +39,7 @@ sudo docker logs c8119d7a9293 search-engine
 sudo docker stop $(sudo docker ps -q)
 
 sudo docker-compose up
+docker-compose build
 
 sudo docker rm $(sudo docker ps -a -q)
 sudo docker rmi $(sudo docker images -q)
@@ -85,22 +87,6 @@ sudo apt-get clean
 sudo docker rmi $(sudo docker images -q)
 
 
-  {
-  "size": 5,
-  "query": {
-    "script_score": {
-      "query": { "match_all": {} },
-      "script": {
-        "source": "cosineSimilarity(params.queryVector, 'embedding') + 1.0",
-        "params": {
-          "queryVector": [5.8, 5.2, 5.7, 5.8, 7.9]
-        }
-      }
-    }
-  }
-}
-
-
 odfe-node:
     image: amazon/opendistro-for-elasticsearch:1.13.2
     container_name: odfe-node
@@ -117,21 +103,6 @@ odfe-node:
     networks:
       - odfe-net
 
-
-{
-  "size": 5,
-  "query": {
-    "script_score": {
-      "query": { "match_all": {} },
-      "script": {
-        "source": "if (doc['embedding'].size() == 0) { return 0.0; } else { def score = cosineSimilarity(params.queryVector, 'embedding') + 1.0; if (Double.isNaN(score) || score < 0) { return 0.0; } else { return score; } }",
-        "params": {
-          "queryVector": [0.0, 0.0, 0.0, 0.0, 0.0]
-        }
-      }
-    }
-  }
-}
 
 
 CREATE SCHEMA VIDEO_DATA;
