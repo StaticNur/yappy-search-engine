@@ -7,7 +7,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +38,10 @@ public class SuggestionServiceImpl implements SuggestionService {
                 .from(from)
                 .size(size);
 
-        MatchQueryBuilder matchQuery = QueryBuilders.matchQuery("suggestion", query)
-                .fuzziness(Fuzziness.AUTO);
-        searchSourceBuilder.query(matchQuery);
+        //PrefixQueryBuilder prefixQuery = QueryBuilders.prefixQuery("suggestion", query);
+        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery("suggestion", query);
+
+        searchSourceBuilder.query(matchPhrasePrefixQuery);
         searchRequest.source(searchSourceBuilder);
 
         SearchResponse searchResponse;

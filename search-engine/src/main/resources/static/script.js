@@ -6,7 +6,7 @@ let mySavedVideosCurrentIndex = 0;
 
 var isMyVideo = false;
 
-const host = "192.144.12.231";
+const host = "192.144.12.231";//localhost
 
 document.addEventListener('DOMContentLoaded', function () {
     showLoadingSearch();
@@ -173,123 +173,136 @@ document.getElementById('btnSearch').addEventListener('click', function (event) 
 });
 
 function sendSearchRequest() {
-    showLoadingSearch();
-    var correction = correctionOfTypos();
     var queryText = document.getElementById('queryText').value;
-    const suggestionsList = document.getElementById('suggestions-list');
-    suggestionsList.style.display = 'none';
+    if(queryText){
+        showLoadingSearch();
+        var correction = '';
+        correctionOfTypos(queryText);
+        const suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.style.display = 'none';
 
-    const startTime = performance.now();
-    try {
-        const logIn = document.getElementById('logIn').value;
-        const typeSearch = document.getElementById('typeSearch').value;
-        const dateFilter = document.getElementById('dateFilter').value;
-        const sort = document.getElementById('sort').value;
-        var sortBy = null;
-        var order = null;
-        switch (sort) {
-            case 'new_video':
-                sortBy = 'created';
-                order = 'DESC';
-                break;
-            case 'old_video':
-                sortBy = 'created';
-                order = 'ASC';
-                break;
-            case 'high_rating':
-                sortBy = 'popularity';
-                order = 'DESC';
-                break;
-            case 'low_rating':
-                sortBy = 'popularity';
-                order = 'ASC';
-                break;
-        }
-        let date = getDate(dateFilter);
-        if(logIn === 'bicyclist'){
-            if(correction === ''){
-                queryText = queryText + ' велосипедист';
-            }else{
-                queryText = correction + ' велосипедист';
+        const startTime = performance.now();
+        try {
+            const logIn = document.getElementById('logIn').value;
+            const typeSearch = document.getElementById('typeSearch').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const sort = document.getElementById('sort').value;
+            var sortBy = null;
+            var order = null;
+            switch (sort) {
+                case 'new_video':
+                    sortBy = 'created';
+                    order = 'DESC';
+                    break;
+                case 'old_video':
+                    sortBy = 'created';
+                    order = 'ASC';
+                    break;
+                case 'high_rating':
+                    sortBy = 'popularity';
+                    order = 'DESC';
+                    break;
+                case 'low_rating':
+                    sortBy = 'popularity';
+                    order = 'ASC';
+                    break;
             }
-        }else if(logIn ==='historian'){
-            if(correction === ''){
-                queryText = queryText + ' историк, средневековье';
-            }else{
-                queryText = correction + ' историк, средневековье';
-            }
-        }else{
-            if (correction !== '') {
-                queryText = correction;
-            }
-        }
-        console.log(`Запрос: ${queryText}`);  // Логирование запроса
-        const searchRequestDto = {
-            typeSearch: typeSearch,
-            query: queryText,
-            sortBy: sortBy,
-            order: order,
-            page: 0,
-            size: 15
-        };
-        console.log('Запрос: ', JSON.stringify(searchRequestDto));
-        console.log('Date: ', date);
-        fetch(`http://${host}:8080/search?date=${date}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(searchRequestDto)
-        }).then(response => response.json())
-            .then(data => {
-            if (data || data.totalHits > 0) {
-                isMyVideo = false;
-                currentIndex = 0;
-                console.log(data.videos);
-                console.log(data.totalHits);
-                videos = data.videos;
-                updateVideo(currentIndex);
-                updateResults(data.videos);
-                if(data.totalHits === 10000){
-                    showMessage(startTime, 'success', `Более ${data.totalHits} видео соответствуют вашему запросу`);
+            let date = getDate(dateFilter);
+            if(logIn === 'bicyclist'){
+                if(correction === ''){
+                    queryText = queryText + ' велосипедист';
                 }else{
-                    showMessage(startTime, 'success', `Всего ${data.totalHits} видео соответствуют вашему запросу`);
+                    queryText = correction + ' велосипедист';
                 }
-            } else {
-                clear();
-                showMessage(startTime, 'info', 'Видео не найдены');
+            }else if(logIn ==='historian'){
+                if(correction === ''){
+                    queryText = queryText + ' историк, средневековье';
+                }else{
+                    queryText = correction + ' историк, средневековье';
+                }
+            }else{
+                if (correction !== '') {
+                    queryText = correction;
+                }
             }
-            hideLoadingSearch();
-        }).catch(error => {
+            console.log(`Запрос: ${queryText}`);  // Логирование запроса
+            const searchRequestDto = {
+                typeSearch: typeSearch,
+                query: queryText,
+                sortBy: sortBy,
+                order: order,
+                page: 0,
+                size: 15
+            };
+            console.log('Запрос: ', JSON.stringify(searchRequestDto));
+            console.log('Date: ', date);
+            fetch(`http://${host}:8080/search?date=${date}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(searchRequestDto)
+            }).then(response => response.json())
+                .then(data => {
+                if (data || data.totalHits > 0) {
+                    isMyVideo = false;
+                    currentIndex = 0;
+                    console.log(data.videos);
+                    console.log(data.totalHits);
+                    videos = data.videos;
+                    updateVideo(currentIndex);
+                    updateResults(data.videos);
+                    if(data.totalHits === 10000){
+                        showMessage(startTime, 'success', `Более ${data.totalHits} видео соответствуют вашему запросу`);
+                    }else{
+                        showMessage(startTime, 'success', `Всего ${data.totalHits} видео соответствуют вашему запросу`);
+                    }
+                } else {
+                    clear();
+                    showMessage(startTime, 'info', 'Видео не найдены');
+                }
+                hideLoadingSearch();
+            }).catch(error => {
+                clear();
+                hideLoadingSearch();
+                showMessage(startTime, 'error', 'Видео не найдены');
+            });
+        } catch (error) {
             clear();
             hideLoadingSearch();
-            showMessage(startTime, 'error', 'Видео не найдены');
-        });
-    } catch (error) {
-        clear();
-        hideLoadingSearch();
-        showMessage(startTime, 'error', 'Произошла ошибка при отправке формы');
+            showMessage(startTime, 'error', 'Произошла ошибка при отправке формы');
+        }
     }
 }
-function correctionOfTypos(text) {
+async function correctionOfTypos(text) {
     var inputField = document.getElementById('correctionOfTypos');
-    fetch(`http://${host}:8005/text_correction`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(text)
-    }).then(response => response.json())
-        .then(data => {
-        if (data) {
-            return data.result;
+    inputField.textContent = '';
+    try {
+        const response = await fetch(`http://192.144.12.231:8006/text_correction?text=${encodeURIComponent(text)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data.result) {
+                console.log('info', data.result);
+                inputField.textContent = data.result;
+                return data.result;
+            } else {
+                inputField.textContent = text;
+                console.log('info', 'не исправлена опечатка');
+            }
         } else {
-            console.log(startTime, 'info', 'не исправлена опечатка');
+            inputField.textContent = text;
+            console.log('error', 'Ошибка исправления опечатка');
         }
-    }).catch(error => {
-        console.log(startTime, 'error', 'Ошибка исправления опечатка');
-    });
-    return '';
+    } catch (error) {
+        inputField.textContent = text;
+        console.error('error', 'Ошибка исправления опечатка', error);
+    }
 }
 
 function getDate(dateFilter){

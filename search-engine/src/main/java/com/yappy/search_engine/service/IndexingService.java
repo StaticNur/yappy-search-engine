@@ -13,4 +13,6 @@ public interface IndexingService {
     MediaContent indexVideoForInspectors(VideoDtoFromInspectors videoDto);
 
     void indexAutocompleteDataFromFile();
+
+    void indexCleanEmbeddingAudio();
 }

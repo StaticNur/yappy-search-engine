@@ -5,6 +5,7 @@ import com.yappy.search_engine.dto.VideoDto;
 import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.dto.VideoResponse;
 import com.yappy.search_engine.model.MediaContent;
+import com.yappy.search_engine.util.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -15,8 +16,6 @@ import java.util.regex.Pattern;
 
 @Component
 public class VideoMapper {
-    private static final double[] EMPTY_VECTOR;
-    private final static int EMBEDDING_LENGTH = 640;
 
     public VideoDto buildVideoFromInspectorsDto(VideoDtoFromInspectors videoDtoFromInspectors) {
         VideoDto videoDto = new VideoDto();
@@ -79,17 +78,17 @@ public class VideoMapper {
         if (ner == null) {
             ner = "";
         }
-        double[] embeddingAudio = convertToDoubleArray(mediaContent.getEmbeddingAudio());
+        double[] embeddingAudio = Converter.convertToDoubleArray(mediaContent.getEmbeddingAudio());
         if (embeddingAudio.length < 10) {
-            embeddingAudio = EMPTY_VECTOR;
+            embeddingAudio = Converter.EMPTY_VECTOR;
         }
-        double[] embeddingVisual = convertToDoubleArray(mediaContent.getEmbeddingVisual());
+        double[] embeddingVisual = Converter.convertToDoubleArray(mediaContent.getEmbeddingVisual());
         if (embeddingVisual.length < 10) {
-            embeddingVisual = EMPTY_VECTOR;
+            embeddingVisual = Converter.EMPTY_VECTOR;
         }
-        double[] embeddingUserDescription = convertToDoubleArray(mediaContent.getEmbeddingUserDescription());
+        double[] embeddingUserDescription = Converter.convertToDoubleArray(mediaContent.getEmbeddingUserDescription());
         if (embeddingUserDescription.length < 10) {
-            embeddingUserDescription = EMPTY_VECTOR;
+            embeddingUserDescription = Converter.EMPTY_VECTOR;
         }
         return new Video(
                 mediaContent.getUuid().toString(),
@@ -108,25 +107,5 @@ public class VideoMapper {
                 embeddingVisual,
                 embeddingUserDescription
         );
-    }
-
-    private double[] convertToDoubleArray(String input) {
-        if (input == null || input.trim().isEmpty()) {
-            return EMPTY_VECTOR;
-        }
-        input = input.replaceAll("[\\[\\]]", "");
-        String[] parts = input.split(",");
-        double[] result = new double[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            result[i] = Double.parseDouble(parts[i].trim());
-        }
-        return result;
-    }
-
-    static {
-        EMPTY_VECTOR = new double[EMBEDDING_LENGTH]; //sb.toString();
-        for (int i = 0; i < EMBEDDING_LENGTH; i++) {
-            EMPTY_VECTOR[i] = 1.0;
-        }
     }
 }

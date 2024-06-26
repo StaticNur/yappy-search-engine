@@ -1,26 +1,29 @@
 package com.yappy.search_engine.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yappy.search_engine.document.Video;
 import com.yappy.search_engine.dto.VideoDto;
 import com.yappy.search_engine.dto.VideoDtoFromInspectors;
 import com.yappy.search_engine.mapper.MediaContentMapper;
 import com.yappy.search_engine.mapper.VideoMapper;
+import com.yappy.search_engine.model.Embedding;
 import com.yappy.search_engine.model.MediaContent;
 import com.yappy.search_engine.out.model.TranscribedAudioResponse;
 import com.yappy.search_engine.out.model.VisualDescription;
 import com.yappy.search_engine.out.service.ApiClient;
 import com.yappy.search_engine.service.MediaContentService;
 import com.yappy.search_engine.service.IndexingService;
+import com.yappy.search_engine.util.Converter;
+import com.yappy.search_engine.util.parser.ExcelParser;
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.xcontent.XContentBuilder;
 import org.elasticsearch.xcontent.XContentFactory;
@@ -31,17 +34,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
 
 @Service
 public class IndexingServiceImpl implements IndexingService {
@@ -59,17 +55,19 @@ public class IndexingServiceImpl implements IndexingService {
     private final ApiClient apiClient;
     private final VideoMapper videoMapper;
     private final MediaContentMapper mediaContentMapper;
+    private final ExcelParser excelParser;
 
     @Autowired
     public IndexingServiceImpl(RestHighLevelClient client, ObjectMapper objectMapper,
                                MediaContentService mediaContentService, ApiClient apiClient,
-                               VideoMapper videoMapper, MediaContentMapper mediaContentMapper) {
+                               VideoMapper videoMapper, MediaContentMapper mediaContentMapper, ExcelParser excelParser) {
         this.client = client;
         this.objectMapper = objectMapper;
         this.mediaContentService = mediaContentService;
         this.apiClient = apiClient;
         this.videoMapper = videoMapper;
         this.mediaContentMapper = mediaContentMapper;
+        this.excelParser = excelParser;
     }
 
     @Override
@@ -170,6 +168,65 @@ public class IndexingServiceImpl implements IndexingService {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void indexCleanEmbeddingAudio() {
+        String fileName1 = "MClip_audio_0_10700_new.xlsx";
+        String fileName2 = "MClip_audio_30000_40000.xlsx";
+        executeIndex(fileName1);
+        executeIndex(fileName2);
+    }
+
+    private void executeIndex(String fileName) {
+        List<Embedding> embeddings;
+        Resource resource = new ClassPathResource(fileName);
+        long batchSize = 1_000;
+        long fromIndex = 0;
+        long toIndex;
+        if (resource.exists()) {
+            try (InputStream inputStream = resource.getInputStream()) {
+                boolean removeBrackets = false;
+                embeddings = excelParser.parseEmbeddingExcelFile(inputStream, removeBrackets);
+
+                while (fromIndex < embeddings.size()) {
+                    toIndex = Math.min(fromIndex + batchSize, embeddings.size());
+
+                    List<Embedding> batch = embeddings.subList((int) fromIndex, (int) toIndex);
+
+                    BulkRequest bulkRequest = new BulkRequest();
+                    for (Embedding embedding : batch) {
+                        if (embedding.getUrl().startsWith("http")){
+                            IndexRequest indexRequest = new IndexRequest("embedding");
+                            indexRequest.id(UUID.randomUUID().toString());
+                            try {
+                                ObjectNode embeddingJson = objectMapper.createObjectNode();
+                                embeddingJson.put("url", embedding.getUrl());
+                                embeddingJson.put("transcription", embedding.getTranscription());
+                                ArrayNode embeddingArrayNode = embeddingJson.putArray("embedding");
+                                double[] embeddingArray = Converter.convertToDoubleArray(embedding.getEmbedding());
+                                for (double value : embeddingArray) {
+                                    embeddingArrayNode.add(value);
+                                }
+
+                                String jsonString = objectMapper.writeValueAsString(embeddingJson);
+                                indexRequest.source(jsonString, XContentType.JSON);
+                                bulkRequest.add(indexRequest);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                    executeBulkRequest(bulkRequest);
+                    fromIndex += batchSize;
+                    System.out.println("Проиндексировано " + fromIndex + " из Excel в ElasticSearch");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new RuntimeException("Файл не найден: " + fileName);
         }
     }
 

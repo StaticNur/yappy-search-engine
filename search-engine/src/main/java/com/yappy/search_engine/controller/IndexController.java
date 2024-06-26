@@ -60,4 +60,11 @@ public class IndexController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new Response("Данные autocomplete успешно загружены из PostgreSQL в ElasticSearch"));
     }
+
+    @PostMapping("/index/clean-embedding-audio")
+    public ResponseEntity<Response> indexationCleanEmbeddingAudio() {
+        service.indexCleanEmbeddingAudio();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Response("Данные autocomplete успешно загружены из Excel в ElasticSearch"));
+    }
 }

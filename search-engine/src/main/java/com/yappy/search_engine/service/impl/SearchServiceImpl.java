@@ -202,7 +202,12 @@ public class SearchServiceImpl implements SearchService {
     public VideoSearchResult searchVideosByCombine(SearchByParameterDto dto, int page, int size, String date) {
         SearchRequest searchRequest = new SearchRequest(Indices.VIDEOS_INDEX);
 
-        double[] embeddingQuery = apiClient.getEmbedding(dto.getQuery());
+        String query = dto.getQuery();
+        if (query == null) {
+            query = "";
+        }
+        query = query.trim().toLowerCase();
+        double[] embeddingQuery = apiClient.getEmbedding(query);
         System.out.println("Query text:" + dto.toString());
         System.out.println("Query embedding: [" + embeddingQuery[0] + "...] length=" + embeddingQuery.length);
 
@@ -224,27 +229,27 @@ public class SearchServiceImpl implements SearchService {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("descriptionUser", dto.getQuery())
+                .matchQuery("descriptionUser", query)
                 .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceDescriptionUser()))
                 .prefixLength(dto.getMinimumPrefixLengthDescriptionUser())
                 .maxExpansions(dto.getMaximumNumberOfMatchOptionsDescriptionUser())
                 .boost(dto.getBoostDescriptionUser()));
 
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("transcriptionAudio", dto.getQuery())
+                .matchQuery("transcriptionAudio", query)
                 .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceAudio()))
                 .prefixLength(dto.getMinimumPrefixLengthAudio())
                 .maxExpansions(dto.getMaximumNumberOfMatchOptionsAudio())
                 .boost(dto.getBoostTranscriptionAudio()));
 
         boolQueryBuilder.should(QueryBuilders
-                .matchQuery("descriptionVisual", dto.getQuery())
+                .matchQuery("descriptionVisual", query)
                 .fuzziness(Fuzziness.fromEdits(dto.getCoefficientOfCoincidenceVisual()))
                 .prefixLength(dto.getMinimumPrefixLengthVisual())
                 .maxExpansions(dto.getMaximumNumberOfMatchOptionsVisual())
                 .boost(dto.getBoostDescriptionVisual()));
 
-        String[] queryParts = dto.getQuery().split(" ");
+        String[] queryParts = query.split(" ");
         BoolQueryBuilder tagsQueryBuilder = QueryBuilders.boolQuery();
         for (String part : queryParts) {
             if (part.startsWith("#")) {
